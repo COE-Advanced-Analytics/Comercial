@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amarás — Diagnóstico Temporal DN &amp; CcC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --primary:#E94B8A; --primary-dark:#D63B75; --secondary:#8E3F98; --accent:#7BC96F;
+  --bg:#FFF7F8; --bg-section:#FCE8EF; --card:#FFFFFF;
+  --text:#2F2F2F; --text-soft:#6F6F6F; --border:#E8DCE2;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;line-height:1.65}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:14px 28px;gap:6px;box-shadow:0 2px 12px rgba(233,75,138,0.06)}
+.nav-logo{font-weight:700;font-size:17px;color:var(--primary);margin-right:20px;display:flex;align-items:center;gap:8px}
+.nav-logo img{height:32px;width:auto;display:block}
+nav a{color:var(--text-soft);text-decoration:none;font-size:13px;font-weight:500;
+  padding:8px 14px;border-radius:999px;transition:all .25s}
+nav a:hover{color:var(--primary-dark);background:var(--bg-section)}
+
+header.hero{background:linear-gradient(135deg, var(--bg-section) 0%, #fff 60%);padding:60px 0 40px}
+.hero-badge{display:inline-block;background:var(--primary);color:#fff;font-size:12px;font-weight:600;
+  padding:6px 16px;border-radius:999px;margin-bottom:18px;letter-spacing:.02em}
+h1{font-size:36px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.2}
+h1 span{color:var(--primary)}
+.hero-desc{color:var(--text-soft);font-size:15px;max-width:720px;margin-bottom:24px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+.kpi{background:var(--card);border-radius:var(--r);padding:20px;border-top:4px solid var(--primary);
+  box-shadow:0 4px 18px rgba(233,75,138,0.08)}
+.kpi.acc{border-top-color:var(--accent)}
+.kpi.sec{border-top-color:var(--secondary)}
+.kpi-label{font-size:11.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:600}
+.kpi-val{font-size:26px;font-weight:700;color:var(--text)}
+.kpi-sub{font-size:11.5px;color:var(--text-soft);margin-top:4px}
+.kpi-sub.neg{color:var(--primary-dark);font-weight:600}
+.kpi-sub.pos{color:var(--accent);font-weight:600}
+
+section{padding:52px 0}
+section.alt{background:var(--bg-section)}
+.sec-tag{display:inline-block;background:var(--secondary);color:#fff;font-size:11px;font-weight:600;
+  padding:5px 14px;border-radius:999px;margin-bottom:14px;letter-spacing:.03em}
+h2{font-size:26px;font-weight:700;margin-bottom:10px;color:var(--text)}
+.sec-desc{color:var(--text-soft);font-size:14px;max-width:760px;margin-bottom:26px}
+
+.card{background:var(--card);border-radius:var(--r);padding:24px 26px;margin-bottom:18px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid var(--border);transition:transform .25s, box-shadow .25s}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(233,75,138,0.1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:800px){.grid2,.grid3,.kpi-row{grid-template-columns:1fr}}
+
+.insight{background:var(--card);border-left:5px solid var(--primary);border-radius:var(--r);
+  padding:20px 24px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.03)}
+.insight.acc{border-left-color:var(--accent)}
+.insight.sec{border-left-color:var(--secondary)}
+.insight b{color:var(--text)}
+.insight p{color:var(--text-soft);font-size:13.5px;line-height:1.75}
+.insight .big{font-size:24px;font-weight:700;color:var(--primary-dark);display:block;margin-bottom:8px}
+
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{background:var(--bg-section);color:var(--primary-dark);text-align:left;padding:10px 14px;font-weight:600;font-size:12px}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:hover td{background:var(--bg-section)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pos{color:var(--accent);font-weight:600}
+.neg{color:var(--primary-dark);font-weight:600}
+
+.chart-box{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid var(--border)}
+.chart-title{font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:16px}
+
+.fase-timeline{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.fase-chip{background:var(--card);border:1.5px solid var(--border);border-radius:999px;padding:10px 18px;
+  font-size:12.5px;font-weight:600;color:var(--text-soft);display:flex;align-items:center;gap:8px}
+.fase-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--primary)}
+.fase-chip.done .dot{background:var(--accent)}
+.fase-chip.pending{opacity:.55}
+
+.action-list{list-style:none}
+.action-list li{background:var(--card);border-radius:var(--r);padding:18px 22px;margin-bottom:12px;
+  display:flex;gap:16px;align-items:flex-start;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+.action-list .n{background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.action-list .owner{font-size:11px;color:var(--secondary);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;display:block}
+
+footer{text-align:center;color:var(--text-soft);font-size:12px;padding:30px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo"><img src="logo.jpg" alt="Amarás">Amarás</span>
+  <a href="#intro">Fases</a>
+  <a href="#resumen">Resumen</a>
+  <a href="#dn">DN Temporal</a>
+  <a href="#segmentos">Segmentación</a>
+  <a href="#ccc">CcC</a>
+  <a href="#base">Base clientes</a>
+  <a href="#portafolio">Portafolio</a>
+  <a href="#promo">Volumen &amp; Promo</a>
+  <a href="#accion">Acción</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="hero-badge">Comité Comercial · Alicorp</span>
+    <h1>Amarás: Diagnóstico Temporal<br>de <span>Distribución y Recompra</span></h1>
+    <p class="hero-desc">Análisis mensual de enero 2024 a junio 2026: cuántos puntos de venta compran Amarás, cómo evoluciona su base de clientes, qué pasa con su portafolio y cómo se compara contra el mercado — con foco en identificar si el problema es de alcance o de fidelización.</p>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">DN actual (jun-2026)</div>
+        <div class="kpi-val">16.71%</div>
+        <div class="kpi-sub neg">vs. pico 30.56% (nov-2024)</div>
+      </div>
+      <div class="kpi sec">
+        <div class="kpi-label">Universo de PDV</div>
+        <div class="kpi-val">158,910</div>
+        <div class="kpi-sub">Bodega, Puesto de Mercado, Minimarket</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Clientes perdidos / mes (prom.)</div>
+        <div class="kpi-val">~18,600</div>
+        <div class="kpi-sub neg">recambiados por ~17,700 nuevos/mes</div>
+      </div>
+      <div class="kpi acc">
+        <div class="kpi-label">DN externa Shampoo (Lock)</div>
+        <div class="kpi-val">21.7%</div>
+        <div class="kpi-sub pos">↑ desde 17.2% (feb-2024)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="intro">
+  <div class="wrap">
+    <span class="sec-tag">Contexto del proyecto</span>
+    <h2>¿Qué estamos haciendo y por qué?</h2>
+    <p class="sec-desc">Este análisis se construyó en fases para cuantificar la recompra de Amarás: primero la distribución (¿llegamos al punto de venta?), luego la recompra (¿nos vuelven a comprar?), luego si la promoción explica el patrón, y qué tan grande es la oportunidad de recuperación.</p>
+
+    <div class="fase-timeline">
+      <div class="fase-chip done"><span class="dot"></span>Fase 1A — Distribución Numérica</div>
+      <div class="fase-chip done"><span class="dot"></span>Fase 1B — Tasa de Recompra (CcC)</div>
+      <div class="fase-chip done"><span class="dot"></span>Fase 2A — Promocionalidad</div>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--text-soft);font-size:13.5px">Este reporte en particular es la <b>vista temporal consolidada</b>: todo mes a mes desde enero 2024 hasta junio 2026, para las tres fases ya completadas — no fotos estáticas de un periodo, sino evolución. Incluye además dos piezas nuevas: un <b>puente de base de clientes</b> (cuántos se pierden y cuántos se suman cada mes) y una comparación con el <b>panel externo de mercado (Lock)</b>, separado por producto.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="resumen">
+  <div class="wrap">
+    <span class="sec-tag">Resumen ejecutivo</span>
+    <h2>~18,600 PDV perdidos y ~17,700 nuevos, cada mes</h2>
+    <p class="sec-desc">El hallazgo central de la vista temporal: Amarás no tiene una base estable de compradores — tiene una <b>base rotativa</b>, donde se pierden en promedio ~18,600 PDV por mes y se ganan ~17,700 nuevos, dejando un tamaño de base relativamente parecido pero compuesto por PDV distintos.</p>
+
+    <div class="insight">
+      <span class="big">DN mensual: 30.56% (pico, nov-2024) → 16.71% (jun-2026)</span>
+      <p>Mientras la <b>DN interna (Dex)</b> cae a su mínimo histórico, el <b>panel externo de mercado (Lock)</b> muestra que la DN de Amarás en Shampoo <b>viene subiendo</b> (17.2% → 21.7%) en el mismo periodo — una señal de que el problema podría estar más en el motor de recompra Dex que en la presencia real en el punto de venta.</p>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="kpi-label">Coeficiente de variación — Volumen</div>
+        <div class="kpi-val" style="font-size:22px">28.4%</div>
+        <div class="kpi-sub">relativamente estable mes a mes</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Coeficiente de variación — Inversión Promo</div>
+        <div class="kpi-val" style="font-size:22px">63.1%</div>
+        <div class="kpi-sub neg">más del doble de volátil que el volumen</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Marca "Amaras" en s4</div>
+        <div class="kpi-val" style="font-size:22px">100%</div>
+        <div class="kpi-sub">constante — el mix real está en la línea (des_familia)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dn">
+  <div class="wrap">
+    <span class="sec-tag">Fase 1A · DN</span>
+    <h2>Distribución Numérica — evolución mensual</h2>
+    <p class="sec-desc">% de PDV del universo con al menos una compra de Amarás ese mes, y volumen total vendido.</p>
+
+    <div class="grid2">
+      <div class="chart-box">
+        <div class="chart-title">DN mensual (%) — enero 2024 a junio 2026</div>
+        <canvas id="chartDN"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Volumen total (kg/L) — enero 2024 a junio 2026</div>
+        <canvas id="chartVolumen"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:14px;font-size:16px">Por tipo de punto de venta (Bodega, Puesto de Mercado, Minimarket)</h3>
+    <div class="grid3">
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Bodega</div>
+        <canvas id="chartTipoPdv_Bodega" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Minimark./Estac.Serv</div>
+        <canvas id="chartTipoPdv_MinimarkEstacServ" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Puesto De Mercado</div>
+        <canvas id="chartTipoPdv_PuestoDeMercado" style="max-height:180px"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:14px;font-size:16px">Por segmento transaccional</h3>
+    <div class="grid3">
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">1 Oro+</div>
+        <canvas id="chartTrans_1Oro" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">2 Oro</div>
+        <canvas id="chartTrans_2Oro" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">3 Plata</div>
+        <canvas id="chartTrans_3Plata" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">4 Bronce</div>
+        <canvas id="chartTrans_4Bronce" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Por definir</div>
+        <canvas id="chartTrans_Pordefinir" style="max-height:180px"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:14px;font-size:16px">Por segmento estratégico</h3>
+    <div class="grid3">
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Abarrotero</div>
+        <canvas id="chartEstr_Abarrotero" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Alejada</div>
+        <canvas id="chartEstr_Alejada" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Clásica</div>
+        <canvas id="chartEstr_Clsica" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Confitero</div>
+        <canvas id="chartEstr_Confitero" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Estrella</div>
+        <canvas id="chartEstr_Estrella" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Golosinera</div>
+        <canvas id="chartEstr_Golosinera" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Lavandero</div>
+        <canvas id="chartEstr_Lavandero" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Por definir</div>
+        <canvas id="chartEstr_Pordefinir" style="max-height:180px"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:14px;font-size:16px">Por región sucursal</h3>
+    <div class="grid3">
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">CENTRO</div>
+        <canvas id="chartReg_CENTRO" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">LIMA</div>
+        <canvas id="chartReg_LIMA" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">NORTE</div>
+        <canvas id="chartReg_NORTE" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">NORTE CHICO</div>
+        <canvas id="chartReg_NORTECHICO" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">ORIENTE</div>
+        <canvas id="chartReg_ORIENTE" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">SUR</div>
+        <canvas id="chartReg_SUR" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">SUR CHICO</div>
+        <canvas id="chartReg_SURCHICO" style="max-height:180px"></canvas>
+      </div>
+      <div class="chart-box" style="padding:14px">
+        <div class="chart-title" style="margin-bottom:8px">Sin región asignada</div>
+        <canvas id="chartReg_Sinreginasignada" style="max-height:180px"></canvas>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-top:18px">
+      <div class="card">
+        <div class="kpi-label">Segmento con mayor caída</div>
+        <div class="kpi-val" style="font-size:20px">4 Bronce</div>
+        <div class="kpi-sub neg">20.3% (ene-24) → 12.1% (jun-26)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Región con mayor caída relativa</div>
+        <div class="kpi-val" style="font-size:20px">Sur Chico</div>
+        <div class="kpi-sub neg">26.3% (ene-24) → 16.0% (jun-26)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">"Por definir" transaccional</div>
+        <div class="kpi-val" style="font-size:20px">0.8% → 12.9%</div>
+        <div class="kpi-sub">segmento creciendo — cambio de clasificación de clientes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="segmentos">
+  <div class="wrap">
+    <span class="sec-tag">Detalle por segmentación</span>
+    <h2>Clientes, volumen, ticket y recurrencia — últimos 3 y 6 meses</h2>
+    <p class="sec-desc">Compradores/no compradores, volumen y ticket promedio miden los <b>últimos 3 meses</b> (foto reciente). Recurrencia (meses distintos comprados) y mix SKU promedio se calculan sobre <b>6 meses</b>, para no quedar sesgados por el ciclo de rotación de ~2 meses ya identificado.</p>
+
+    <h3 style="margin-top:10px;margin-bottom:14px;font-size:16px">Por tipo de punto de venta</h3>
+    <div class="card"><table><thead><tr>
+      <th>Tipo de PDV</th><th class="num">Universo</th><th class="num">Compraron (3m)</th>
+      <th class="num">No compraron (3m)</th><th class="num">% Compró</th>
+      <th class="num">Volumen (3m)</th><th class="num">Ticket prom. (3m)</th>
+      <th class="num">Recurrencia (de 6m)</th><th class="num">Mix SKU prom. (6m)</th>
+    </tr></thead><tbody><tr>
+      <td>Puesto De Mercado</td>
+      <td class="num">30,017</td>
+      <td class="num">12,838</td>
+      <td class="num">17,179</td>
+      <td class="num pos">42.8%</td>
+      <td class="num">39,261</td>
+      <td class="num">S/ 41.69</td>
+      <td class="num">3.06</td>
+      <td class="num">4.97</td>
+    </tr>
+<tr>
+      <td>Bodega</td>
+      <td class="num">128,637</td>
+      <td class="num">43,447</td>
+      <td class="num">85,190</td>
+      <td class="num ">33.8%</td>
+      <td class="num">60,213</td>
+      <td class="num">S/ 22.58</td>
+      <td class="num">2.55</td>
+      <td class="num">2.94</td>
+    </tr>
+<tr>
+      <td>Minimark./Estac.Serv</td>
+      <td class="num">256</td>
+      <td class="num">67</td>
+      <td class="num">189</td>
+      <td class="num neg">26.2%</td>
+      <td class="num">362</td>
+      <td class="num">S/ 112.53</td>
+      <td class="num">2.75</td>
+      <td class="num">5.72</td>
+    </tr></tbody></table></div>
+
+    <h3 style="margin-top:26px;margin-bottom:14px;font-size:16px">Por segmento transaccional</h3>
+    <div class="card"><table><thead><tr>
+      <th>Segmento transaccional</th><th class="num">Universo</th><th class="num">Compraron (3m)</th>
+      <th class="num">No compraron (3m)</th><th class="num">% Compró</th>
+      <th class="num">Volumen (3m)</th><th class="num">Ticket prom. (3m)</th>
+      <th class="num">Recurrencia (de 6m)</th><th class="num">Mix SKU prom. (6m)</th>
+    </tr></thead><tbody><tr>
+      <td>1 Oro+</td>
+      <td class="num">5,121</td>
+      <td class="num">3,228</td>
+      <td class="num">1,893</td>
+      <td class="num pos">63.0%</td>
+      <td class="num">22,076</td>
+      <td class="num">S/ 86.80</td>
+      <td class="num">4.02</td>
+      <td class="num">7.41</td>
+    </tr>
+<tr>
+      <td>2 Oro</td>
+      <td class="num">13,278</td>
+      <td class="num">7,631</td>
+      <td class="num">5,647</td>
+      <td class="num pos">57.5%</td>
+      <td class="num">20,507</td>
+      <td class="num">S/ 36.44</td>
+      <td class="num">3.55</td>
+      <td class="num">4.91</td>
+    </tr>
+<tr>
+      <td>3 Plata</td>
+      <td class="num">27,293</td>
+      <td class="num">12,096</td>
+      <td class="num">15,197</td>
+      <td class="num pos">44.3%</td>
+      <td class="num">20,359</td>
+      <td class="num">S/ 25.50</td>
+      <td class="num">2.94</td>
+      <td class="num">3.61</td>
+    </tr>
+<tr>
+      <td>Por definir</td>
+      <td class="num">20,761</td>
+      <td class="num">6,224</td>
+      <td class="num">14,537</td>
+      <td class="num ">30.0%</td>
+      <td class="num">8,896</td>
+      <td class="num">S/ 25.18</td>
+      <td class="num">1.98</td>
+      <td class="num">2.65</td>
+    </tr>
+<tr>
+      <td>4 Bronce</td>
+      <td class="num">92,457</td>
+      <td class="num">27,173</td>
+      <td class="num">65,284</td>
+      <td class="num neg">29.4%</td>
+      <td class="num">27,998</td>
+      <td class="num">S/ 18.42</td>
+      <td class="num">2.29</td>
+      <td class="num">2.58</td>
+    </tr></tbody></table></div>
+
+    <h3 style="margin-top:26px;margin-bottom:14px;font-size:16px">Por segmento estratégico</h3>
+    <div class="card"><table><thead><tr>
+      <th>Segmento estratégico</th><th class="num">Universo</th><th class="num">Compraron (3m)</th>
+      <th class="num">No compraron (3m)</th><th class="num">% Compró</th>
+      <th class="num">Volumen (3m)</th><th class="num">Ticket prom. (3m)</th>
+      <th class="num">Recurrencia (de 6m)</th><th class="num">Mix SKU prom. (6m)</th>
+    </tr></thead><tbody><tr>
+      <td>Lavandero</td>
+      <td class="num">3,846</td>
+      <td class="num">2,011</td>
+      <td class="num">1,835</td>
+      <td class="num pos">52.3%</td>
+      <td class="num">13,042</td>
+      <td class="num">S/ 79.75</td>
+      <td class="num">3.45</td>
+      <td class="num">7.24</td>
+    </tr>
+<tr>
+      <td>Abarrotero</td>
+      <td class="num">22,311</td>
+      <td class="num">9,618</td>
+      <td class="num">12,693</td>
+      <td class="num pos">43.1%</td>
+      <td class="num">23,806</td>
+      <td class="num">S/ 34.61</td>
+      <td class="num">3.09</td>
+      <td class="num">4.69</td>
+    </tr>
+<tr>
+      <td>Estrella</td>
+      <td class="num">40,436</td>
+      <td class="num">16,572</td>
+      <td class="num">23,864</td>
+      <td class="num pos">41.0%</td>
+      <td class="num">26,639</td>
+      <td class="num">S/ 23.57</td>
+      <td class="num">2.98</td>
+      <td class="num">3.48</td>
+    </tr>
+<tr>
+      <td>Alejada</td>
+      <td class="num">20,047</td>
+      <td class="num">8,037</td>
+      <td class="num">12,010</td>
+      <td class="num pos">40.1%</td>
+      <td class="num">11,462</td>
+      <td class="num">S/ 25.12</td>
+      <td class="num">2.59</td>
+      <td class="num">2.98</td>
+    </tr>
+<tr>
+      <td>Por definir</td>
+      <td class="num">20,761</td>
+      <td class="num">6,224</td>
+      <td class="num">14,537</td>
+      <td class="num ">30.0%</td>
+      <td class="num">8,896</td>
+      <td class="num">S/ 25.18</td>
+      <td class="num">1.98</td>
+      <td class="num">2.65</td>
+    </tr>
+<tr>
+      <td>Clásica</td>
+      <td class="num">42,159</td>
+      <td class="num">12,366</td>
+      <td class="num">29,793</td>
+      <td class="num neg">29.3%</td>
+      <td class="num">14,505</td>
+      <td class="num">S/ 20.45</td>
+      <td class="num">2.24</td>
+      <td class="num">2.46</td>
+    </tr>
+<tr>
+      <td>Confitero</td>
+      <td class="num">1,138</td>
+      <td class="num">274</td>
+      <td class="num">864</td>
+      <td class="num neg">24.1%</td>
+      <td class="num">454</td>
+      <td class="num">S/ 29.08</td>
+      <td class="num">2.32</td>
+      <td class="num">2.89</td>
+    </tr>
+<tr>
+      <td>Golosinera</td>
+      <td class="num">8,212</td>
+      <td class="num">1,250</td>
+      <td class="num">6,962</td>
+      <td class="num neg">15.2%</td>
+      <td class="num">1,033</td>
+      <td class="num">S/ 16.55</td>
+      <td class="num">2.02</td>
+      <td class="num">2.22</td>
+    </tr></tbody></table></div>
+
+    <h3 style="margin-top:26px;margin-bottom:14px;font-size:16px">Por región sucursal</h3>
+    <div class="card"><table><thead><tr>
+      <th>Región sucursal</th><th class="num">Universo</th><th class="num">Compraron (3m)</th>
+      <th class="num">No compraron (3m)</th><th class="num">% Compró</th>
+      <th class="num">Volumen (3m)</th><th class="num">Ticket prom. (3m)</th>
+      <th class="num">Recurrencia (de 6m)</th><th class="num">Mix SKU prom. (6m)</th>
+    </tr></thead><tbody><tr>
+      <td>Sin región asignada</td>
+      <td class="num">1,285</td>
+      <td class="num">589</td>
+      <td class="num">696</td>
+      <td class="num pos">45.8%</td>
+      <td class="num">995</td>
+      <td class="num">S/ 30.29</td>
+      <td class="num">2.62</td>
+      <td class="num">3.13</td>
+    </tr>
+<tr>
+      <td>NORTE CHICO</td>
+      <td class="num">5,465</td>
+      <td class="num">2,244</td>
+      <td class="num">3,221</td>
+      <td class="num pos">41.1%</td>
+      <td class="num">3,146</td>
+      <td class="num">S/ 22.13</td>
+      <td class="num">2.82</td>
+      <td class="num">3.05</td>
+    </tr>
+<tr>
+      <td>SUR CHICO</td>
+      <td class="num">10,417</td>
+      <td class="num">4,224</td>
+      <td class="num">6,193</td>
+      <td class="num pos">40.5%</td>
+      <td class="num">6,348</td>
+      <td class="num">S/ 24.93</td>
+      <td class="num">2.63</td>
+      <td class="num">3.13</td>
+    </tr>
+<tr>
+      <td>SUR</td>
+      <td class="num">35,632</td>
+      <td class="num">13,791</td>
+      <td class="num">21,841</td>
+      <td class="num ">38.7%</td>
+      <td class="num">28,914</td>
+      <td class="num">S/ 31.68</td>
+      <td class="num">2.72</td>
+      <td class="num">3.3</td>
+    </tr>
+<tr>
+      <td>CENTRO</td>
+      <td class="num">11,125</td>
+      <td class="num">4,296</td>
+      <td class="num">6,829</td>
+      <td class="num ">38.6%</td>
+      <td class="num">7,202</td>
+      <td class="num">S/ 27.41</td>
+      <td class="num">2.57</td>
+      <td class="num">3.07</td>
+    </tr>
+<tr>
+      <td>LIMA</td>
+      <td class="num">57,487</td>
+      <td class="num">19,357</td>
+      <td class="num">38,130</td>
+      <td class="num ">33.7%</td>
+      <td class="num">31,498</td>
+      <td class="num">S/ 22.81</td>
+      <td class="num">2.76</td>
+      <td class="num">3.81</td>
+    </tr>
+<tr>
+      <td>NORTE</td>
+      <td class="num">30,848</td>
+      <td class="num">9,922</td>
+      <td class="num">20,926</td>
+      <td class="num ">32.2%</td>
+      <td class="num">18,373</td>
+      <td class="num">S/ 29.29</td>
+      <td class="num">2.54</td>
+      <td class="num">3.18</td>
+    </tr>
+<tr>
+      <td>ORIENTE</td>
+      <td class="num">6,651</td>
+      <td class="num">1,929</td>
+      <td class="num">4,722</td>
+      <td class="num neg">29.0%</td>
+      <td class="num">3,362</td>
+      <td class="num">S/ 33.36</td>
+      <td class="num">2.09</td>
+      <td class="num">3.02</td>
+    </tr></tbody></table></div>
+
+    <div class="insight sec" style="margin-top:18px">
+      <p><b>El patrón se repite en todas las dimensiones:</b> a mayor % de PDV que compró en los últimos 3 meses, también mayor recurrencia y mayor mix de SKU — no son fenómenos independientes. Segmentos como "1 Oro+" y "Lavandero" combinan alta penetración reciente (>52%), alta recurrencia (>3.4 de 6 meses) y tickets más altos; en el otro extremo, "Golosinera" y "Por definir" tienen baja penetración, baja recurrencia (~2 de 6) y mix SKU angosto (~2.2-2.7) — son los segmentos donde el problema de recompra es más agudo.</p>
+    </div>
+  </div>
+</section>
+
+<section id="ccc">
+  <div class="wrap">
+    <span class="sec-tag">Fase 1B · CcC</span>
+    <h2>Tasa de Recompra (CcC) — evolución mensual</h2>
+    <p class="sec-desc">% de PDV activos en un mes que vuelven a comprar Amarás al mes siguiente, separado por tipo de SKU (Sachetón, Unidad) y total.</p>
+
+    <div class="chart-box">
+      <div class="chart-title">CcC mensual (%) — enero 2024 a la fecha</div>
+      <canvas id="chartCcc"></canvas>
+    </div>
+
+    <div class="grid3" style="margin-top:18px">
+      <div class="card">
+        <div class="kpi-label">CcC total — pico histórico</div>
+        <div class="kpi-val" style="font-size:22px">64.1%</div>
+        <div class="kpi-sub">2024-04</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">CcC total — última lectura</div>
+        <div class="kpi-val" style="font-size:22px">38.6%</div>
+        <div class="kpi-sub neg">2026-04</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Caída desde el pico</div>
+        <div class="kpi-val" style="font-size:22px">-25.5 pp</div>
+        <div class="kpi-sub neg">recompra cayendo de forma sostenida</div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <p><b>La CcC (recompra al mes siguiente) confirma el mismo patrón que el puente de base:</b> Sachetón parte con tasas de recompra más altas que Unidad en 2024, pero ambos formatos convergen a la baja — la caída de CcC total es la métrica que más directamente conecta con la "base rotativa" descrita abajo: no es solo que entren clientes nuevos, es que los que ya compraron cada vez repiten menos.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="base">
+  <div class="wrap">
+    <span class="sec-tag">Fase 1B · Temporalidad</span>
+    <h2>Puente de base de clientes — perdidos vs. nuevos, mes a mes</h2>
+    <p class="sec-desc">Para cada mes: cuántos PDV del mes anterior dejaron de comprar (se restan) y cuántos PDV nuevos o reactivados se suman.</p>
+
+    <div class="chart-box">
+      <div class="chart-title">Base de clientes Amarás — evolución mensual (base final)</div>
+      <canvas id="chartBase"></canvas>
+    </div>
+
+    <div class="insight sec">
+      <p><b>El puente confirma una rotación estructural, no una fuga:</b> cada mes se pierden entre 13,000 y 24,500 PDV y se ganan entre 11,900 y 25,200 — la base final se mantiene relativamente estable (26,500 a 48,500) porque las entradas casi siempre compensan las salidas, pero son <b>personas distintas</b> cada vez. Esto es exactamente el patrón de "base rotativa" que explica por qué el CcC (recompra) es tan bajo.</p>
+    </div>
+  </div>
+</section>
+
+<section id="portafolio">
+  <div class="wrap">
+    <span class="sec-tag">Portafolio</span>
+    <h2>Mix de línea Amarás — últimos 3 meses</h2>
+    <p class="sec-desc">Distribución del monto vendido por línea de producto (des_familia), promedio de los últimos 3 meses con data.</p>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Línea</th><th class="num">% del monto vendido</th></tr></thead>
+        <tbody>
+          <tr><td>Amaras Reparacion Divina</td><td class="num">32.0%</td></tr>
+          <tr><td>Amaras Magia Andina</td><td class="num">30.1%</td></tr>
+          <tr><td>Amaras Diosa Rulosa</td><td class="num">18.3%</td></tr>
+          <tr><td>Amaras Largo Amazonico</td><td class="num">10.8%</td></tr>
+          <tr><td>Amaras Raices Y Puntas Felices</td><td class="num">4.3%</td></tr>
+          <tr><td>Amaras Bendito Clima de Lima</td><td class="num">4.2%</td></tr>
+          <tr><td>Amaras Amor de Verano</td><td class="num">0.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight acc">
+      <p><b>Magia Andina y Reparación Divina concentran cerca del 60% de la venta reciente.</b> Amor de Verano cayó de ser una línea relevante en 2024 a casi desaparecer (menos de 0.5% en 2026) — posible producto de temporada agotado o descontinuado. Largo Amazónico es la línea más nueva del portafolio.</p>
+    </div>
+
+    <h3 style="margin-top:30px;margin-bottom:14px;font-size:16px">Cantidad de SKUs distintos vendidos — evolución mensual</h3>
+    <div class="chart-box">
+      <div class="chart-title">Amplitud del portafolio vendido (# de SKUs distintos con al menos 1 venta), enero 2024 a junio 2026</div>
+      <canvas id="chartMixSku"></canvas>
+    </div>
+
+    <div class="insight sec">
+      <p><b>La amplitud de portafolio se mantiene relativamente estable (entre 15 y 22 SKUs activos por mes)</b>, sin una caída marcada que explique la baja de recompra — el problema no es que Amarás haya reducido su oferta. Un hallazgo aparte a validar: dentro del detalle de venta se observa un relanzamiento a fines de 2025 (los combos "22ml" son reemplazados por una versión "20ml" con prefijo "N."), que vale la pena cruzar contra la caída de CcC de esa misma ventana.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="promo">
+  <div class="wrap">
+    <span class="sec-tag">Fase 2A · Promocionalidad</span>
+    <h2>Volumen vs. Inversión Promocional</h2>
+    <p class="sec-desc">Serie mensual de ambas variables — el volumen es bastante más estable (CV 28.4%) que la inversión en promociones (CV 63.1%), lo que ya sugiere que la promo no es el principal motor del volumen.</p>
+
+    <div class="chart-box">
+      <div class="chart-title">Inversión Promocional (barras, S/) vs. Volumen (línea, kg/L) — mensual</div>
+      <p style="font-size:12px;color:var(--text-soft);margin-bottom:14px">
+        <span style="display:inline-block;width:10px;height:10px;background:#F7A64A;border-radius:2px;margin-right:6px"></span>Barras = Inversión promocional en soles (eje derecho)
+        &nbsp;&nbsp;&nbsp;
+        <span style="display:inline-block;width:10px;height:10px;background:#E94B8A;border-radius:2px;margin-right:6px"></span>Línea = Volumen en kg/L (eje izquierdo)
+      </p>
+      <canvas id="chartPromo"></canvas>
+    </div>
+
+    <div class="insight" style="margin-top:14px">
+      <p><b>Cómo leer este gráfico:</b> son dos series independientes, cada una en su propio eje porque están en unidades distintas (soles vs. kg/L) — no se puede comparar la altura de la barra contra la de la línea. Lo que sí importa es si los <b>picos de inversión coinciden en el tiempo con los picos de volumen</b>. Como no coinciden de forma consistente (hay meses de inversión alta con volumen plano, y meses de volumen alto con inversión apenas mediana), el gráfico respalda que la promo no es el motor principal del volumen — mismo hallazgo que confirma la correlación (r) de la tarjeta de al lado.</p>
+    </div>
+
+    <div class="card" style="margin-top:18px;max-width:340px">
+      <div class="kpi-label">Correlación inversión promo → volumen</div>
+      <div class="kpi-val" style="font-size:22px">r = 0.44</div>
+      <div class="kpi-sub">relación débil</div>
+    </div>
+
+    <div class="insight" style="margin-top:18px">
+      <p><b>El coeficiente de correlación (r = 0.44) confirma lo que muestra el gráfico:</b> los meses de mayor inversión promocional no son sistemáticamente los meses de mayor volumen (ver los picos de barras en set-2024 y abr-2026, que no tienen un pico equivalente en la línea de volumen). La promo no está siendo el motor que explica las subidas y bajadas del volumen.</p>
+    </div>
+  </div>
+</section>
+
+<section id="interno">
+  <div class="wrap">
+    <span class="sec-tag">Fase 1A · Benchmark interno</span>
+    <h2>DN de Amarás vs. otras marcas del portafolio Alicorp</h2>
+    <p class="sec-desc">Comparación dentro del mismo universo de 158,910 PDV — Home Care y Personal Care.</p>
+
+    <div class="chart-box">
+      <div class="chart-title">% DN por marca propia (Home Care + Personal Care) — foto reciente</div>
+      <canvas id="chartBenchInterno" style="max-height:380px"></canvas>
+    </div>
+
+    <div class="insight">
+      <p><b>Amarás (36.5%) está muy cerca de Dento (35.1%)</b>, su comparable directo en Personal Care, pero lejos de los líderes de Home Care como Bolívar (71.3%) y Sapolio (64.3%) — aunque esa brecha responde también a que el detergente es una compra casi universal, mientras que cuidado capilar tiene más marcas compitiendo por el mismo bolsillo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="accion">
+  <div class="wrap">
+    <span class="sec-tag">Próximos pasos</span>
+    <h2>Qué hacer con este diagnóstico</h2>
+    <ul class="action-list">
+      <li><div class="n">1</div><div><span class="owner">Trade / Analytics</span>Investigar la brecha entre la DN externa (Lock, creciendo en Shampoo/Reacondicionador) y la DN interna Dex (cayendo en todos los cortes) — puede haber una brecha de captura de data, no necesariamente de venta real.</div></li>
+      <li><div class="n">2</div><div><span class="owner">Trade</span>Diseñar un programa de retención dirigido a los ~18,600 PDV que se pierden cada mes — el puente de base muestra que el problema es de <b>fuga constante</b>, no de una caída puntual.</div></li>
+      <li><div class="n">3</div><div><span class="owner">Trade</span>No usar la inversión promocional como panca de volumen — su CV (63%) es más del doble que el del volumen (28%), lo que indica que no está moviendo la aguja de forma consistente.</div></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Amarás · Alicorp — Diagnóstico Temporal DN &amp; CcC · Enero 2024 – Junio 2026 · Fuente: BigQuery (Dex) + panel Lock (canal tradicional)
+</footer>
+
+<script>
+Chart.defaults.font.family = "'Poppins', sans-serif";
+Chart.defaults.color = '#6F6F6F';
+const C = (id, type, data, opts) => new Chart(document.getElementById(id), { type, data, options: opts });
+const grid = 'rgba(232,220,226,0.6)';
+
+C('chartDN','line',{
+  labels: ['2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'],
+  datasets: [
+    {label:'% DN', data:[23.04,22.35,22.33,23.35,29.53,25.26,25.15,27.82,25.99,23.58,30.56,25.02,29.04,26.87,26.91,27.41,30.06,27.69,24.03,19.16,20.84,21.1,20.02,21.16,21.89,20.36,18.61,20.24,16.93,16.71], borderColor:'#E94B8A', backgroundColor:'rgba(233,75,138,0.1)', fill:true, tension:.3, pointRadius:2, borderWidth:2.5}
+  ]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}},
+    y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true}
+  }
+});
+
+C('chartVolumen','line',{
+  labels: ['2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'],
+  datasets: [
+    {label:'Volumen (kg/L)', data:[43633.378,42079.334,39161.896,39665.778,39498.595,34622.171,33343.706,34549.68,33879.017,33908.474,40547.173,32032.776,40836.256,38841.941,37272.677,35984.062,41394.415,32810.731,32530.708,32357.663,33436.451,33416.591,31761.56,34991.408,46607.024,36215.536,35913.428,40231.731999999996,29050.285,30554.334], borderColor:'#8E3F98', backgroundColor:'rgba(142,63,152,0.1)', fill:true, tension:.3, pointRadius:2, borderWidth:2.5}
+  ]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}},
+    y:{grid:{color:grid}, beginAtZero:true}
+  }
+});
+
+C('chartCcc','line',{
+  labels: ['2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04'],
+  datasets: [
+    {label:'CcC Total', data:[56.6,55.0,56.3,64.1,54.5,54.7,59.2,54.8,51.1,62.2,49.6,57.2,51.8,54.0,54.5,56.4,51.2,44.7,39.2,45.9,45.8,43.5,45.6,46.9,44.2,42.0,46.3,38.6], borderColor:'#E94B8A', backgroundColor:'rgba(233,75,138,0.1)', fill:true, tension:.3, pointRadius:2, borderWidth:2.5},
+    {label:'CcC Sachetón', data:[45.6,42.7,45.4,55.2,43.3,42.3,47.0,41.9,34.3,54.4,41.6,48.6,44.0,47.1,48.6,52.8,46.7,40.8,34.4,40.4,40.7,39.4,40.9,38.1,38.8,36.8,40.8,33.9], borderColor:'#8E3F98', tension:.3, pointRadius:2},
+    {label:'CcC Unidad', data:[42.1,40.5,39.3,35.6,35.6,34.3,34.3,36.8,41.0,34.5,27.3,34.4,32.2,34.5,32.3,27.8,27.8,28.4,29.1,32.4,31.4,30.2,32.3,41.7,32.7,32.6,35.8,30.0], borderColor:'#5AA9E6', tension:.3, pointRadius:2}
+  ]
+},{
+  responsive:true,
+  plugins:{legend:{position:'bottom'}},
+  scales:{
+    x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}},
+    y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true}
+  }
+});
+
+C('chartBase','line',{
+  labels: ['2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'],
+  datasets: [
+    {label:'Base final (PDV con Amarás)', data:[35522,35490,37112,46925,40135,39961,44204,41305,37475,48561,39753,46140,42703,42766,43553,47772,44000,38186,30448,33123,33533,31812,33623,34783,32357,29579,32170,26901,26554], borderColor:'#E94B8A', backgroundColor:'rgba(233,75,138,0.1)', fill:true, tension:.3, pointRadius:2, borderWidth:2.5}
+  ]
+},{
+  responsive:true,
+  plugins:{legend:{position:'bottom'}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}}, y:{grid:{color:grid}, beginAtZero:true} }
+});
+
+C('chartPromo','bar',{
+  labels: ['2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'],
+  datasets: [
+    {type:'bar', label:'Inversión promo (S/)', data:[9570.91,13316.43,13439.02,16917.6,13391.24,13173.51,16901.6,33429.76,66758.0,64897.55,19209.54,11963.53,2670.05,41220.47,41174.97,43301.75,22909.18,19841.77,22107.24,18639.61,24481.65,23300.74,28843.94,31681.62,50443.11,32203.88,31294.59,84742.32,31650.69,40572.51], backgroundColor:'rgba(247,166,74,0.55)', borderRadius:4, yAxisID:'y1', order:2},
+    {type:'line', label:'Volumen (kg/L)', data:[19907.234,19960.385,21735.488,20352.771,18208.961,20084.398,18094.381,17976.17,18153.393,19823.823,24571.887,18224.943,24228.022,25534.899999999998,21447.060999999998,21526.571,30461.439,22311.921,21072.315,18894.083,19092.106,21371.6396,26228.141,29950.531,43989.651,35964.68,35686.284999999996,39753.623999999996,27136.4934,30209.873], borderColor:'#E94B8A', backgroundColor:'#E94B8A', tension:.3, pointRadius:3, borderWidth:2.5, yAxisID:'y', order:1}
+  ]
+},{
+  responsive:true,
+  plugins:{legend:{position:'bottom'}},
+  scales:{
+    x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}},
+    y:{position:'left',grid:{color:grid}, beginAtZero:true, title:{display:true,text:'Volumen (kg/L)'}},
+    y1:{position:'right',grid:{display:false}, beginAtZero:true, title:{display:true,text:'Inversión promo (S/)'}}
+  }
+});
+
+C('chartTipoPdv_Bodega','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05"],
+  datasets: [{label:'Bodega', data:["20.57", "19.9", "20.17", "21.03", "26.65", "22.85", "22.86", "25.39", "23.97", "21.63", "27.79", "23.31", "26.93", "25.35", "25.36", "26.07", "28.53", "26.5", "22.78", "18.06", "19.58", "19.8", "18.69", "20.01", "20.31", "19.02", "17.41", "18.67", "15.68"], borderColor:'#E94B8A', backgroundColor:'#E94B8A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTipoPdv_MinimarkEstacServ','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05"],
+  datasets: [{label:'Minimark./Estac.Serv', data:["13.28", "12.89", "13.28", "12.89", "12.89", "10.94", "9.38", "10.94", "15.23", "8.98", "10.94", "14.06", "16.8", "13.67", "16.8", "14.45", "18.36", "15.62", "15.62", "12.11", "13.67", "16.41", "13.28", "13.67", "19.14", "17.97", "12.89", "14.45", "14.06"], borderColor:'#8E3F98', backgroundColor:'#8E3F9822', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTipoPdv_PuestoDeMercado','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05"],
+  datasets: [{label:'Puesto De Mercado', data:["33.7", "32.96", "31.69", "33.39", "42.03", "35.69", "35.07", "38.36", "34.75", "32.09", "42.61", "32.41", "38.16", "33.49", "33.65", "33.23", "36.74", "32.87", "29.46", "23.92", "26.31", "26.74", "25.76", "26.15", "28.66", "26.11", "23.84", "27.04", "22.28"], borderColor:'#7BC96F', backgroundColor:'#7BC96F22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTrans_1Oro','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'1 Oro+', data:["47.43", "46.83", "46.85", "48.62", "52.88", "49.03", "48.43", "50.65", "48.84", "48.08", "54.72", "48.68", "53.7", "53.82", "53.23", "52.49", "60.28", "54.7", "51.01", "47.0", "48.27", "49.68", "46.69", "48.25", "50.24", "46.34", "45.23", "46.16", "41.24", "41.69"], borderColor:'#E94B8A', backgroundColor:'#E94B8A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTrans_2Oro','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'2 Oro', data:["43.13", "41.88", "41.41", "42.97", "49.59", "44.16", "42.95", "45.9", "44.07", "42.53", "50.84", "44.32", "49.66", "46.88", "47.64", "47.89", "53.19", "47.54", "44.17", "37.93", "40.89", "41.41", "38.64", "39.65", "42.03", "38.33", "36.06", "38.54", "33.85", "34.23"], borderColor:'#8E3F98', backgroundColor:'#8E3F9822', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTrans_3Plata','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'3 Plata', data:["34.79", "33.58", "33.55", "34.53", "42.4", "36.5", "35.7", "38.82", "36.73", "33.76", "42.74", "35.86", "40.98", "38.39", "38.23", "38.59", "43.16", "37.5", "33.94", "27.19", "29.36", "28.99", "27.2", "28.32", "29.91", "26.7", "25.3", "26.53", "22.01", "22.08"], borderColor:'#7BC96F', backgroundColor:'#7BC96F22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTrans_4Bronce','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'4 Bronce', data:["20.34", "19.73", "19.78", "20.92", "27.99", "23.42", "23.66", "26.8", "24.66", "21.68", "29.42", "23.25", "27.6", "25.08", "25.13", "25.9", "27.9", "26.61", "22.06", "16.8", "18.52", "18.41", "16.92", "17.88", "17.68", "16.51", "14.26", "15.56", "12.5", "12.08"], borderColor:'#F7A64A', backgroundColor:'#F7A64A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartTrans_Pordefinir','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Por definir', data:["0.77", "0.75", "0.73", "0.71", "0.86", "0.69", "0.76", "0.7", "0.62", "0.5", "0.67", "0.43", "0.45", "0.28", "0.21", "0.13", "0.23", "0.23", "0.23", "0.22", "0.41", "2.7", "5.89", "7.86", "10.2", "11.27", "11.49", "14.76", "13.13", "12.92"], borderColor:'#5AA9E6', backgroundColor:'#5AA9E622', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Abarrotero','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Abarrotero', data:["37.32", "36.21", "34.66", "36.77", "46.47", "39.25", "38.6", "41.99", "37.87", "34.92", "46.71", "35.14", "41.57", "36.3", "36.38", "35.9", "39.79", "35.81", "31.65", "25.64", "27.95", "28.55", "27.14", "26.94", "29.47", "26.96", "24.46", "27.37", "22.41", "22.65"], borderColor:'#E94B8A', backgroundColor:'#E94B8A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Alejada','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Alejada', data:["26.26", "24.69", "25.58", "26.4", "30.72", "27.6", "27.6", "30.59", "28.21", "26.36", "34.2", "27.99", "34.64", "32.23", "31.83", "32.79", "37.39", "33.89", "29.64", "23.32", "25.75", "25.34", "22.82", "24.95", "24.84", "23.81", "21.04", "21.88", "18.16", "18.51"], borderColor:'#8E3F98', backgroundColor:'#8E3F9822', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Clsica','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Clásica', data:["18.95", "18.52", "19.35", "20.09", "26.02", "22.43", "22.56", "25.56", "24.14", "21.4", "27.94", "22.7", "27.68", "25.25", "25.07", "26.2", "28.04", "27.35", "21.98", "17.13", "18.47", "18.43", "16.53", "18.16", "17.49", "16.24", "14.14", "15.3", "12.27", "12.09"], borderColor:'#7BC96F', backgroundColor:'#7BC96F22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Confitero','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Confitero', data:["16.26", "17.4", "18.37", "16.7", "20.12", "18.63", "18.37", "20.04", "21.7", "18.28", "24.17", "23.11", "24.43", "20.47", "22.93", "22.23", "25.31", "24.17", "18.89", "13.09", "16.52", "16.52", "15.91", "17.22", "16.61", "14.41", "12.92", "13.44", "10.46", "8.52"], borderColor:'#F7A64A', backgroundColor:'#F7A64A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Estrella','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Estrella', data:["30.21", "29.3", "28.91", "30.26", "38.62", "32.62", "32.4", "35.05", "33.49", "30.56", "38.44", "32.64", "36.01", "34.58", "34.97", "35.51", "38.74", "35.05", "31.12", "25.67", "27.49", "27.46", "25.99", "26.59", "27.57", "24.83", "23.43", "24.78", "21.33", "20.49"], borderColor:'#5AA9E6', backgroundColor:'#5AA9E622', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Golosinera','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Golosinera', data:["10.75", "10.75", "10.62", "11.65", "17.08", "13.54", "14.05", "18.0", "16.87", "13.08", "17.74", "19.01", "17.35", "18.11", "18.63", "19.03", "20.76", "19.23", "18.33", "11.41", "13.2", "12.76", "11.45", "11.28", "10.33", "10.51", "8.71", "7.44", "5.78", "5.78"], borderColor:'#D95D39', backgroundColor:'#D95D3922', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Lavandero','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Lavandero', data:["41.42", "41.65", "40.3", "42.07", "52.11", "45.01", "43.84", "49.43", "44.75", "42.49", "54.34", "42.12", "49.22", "45.09", "44.8", "44.85", "48.78", "41.89", "40.74", "34.24", "38.07", "36.74", "35.36", "37.68", "40.38", "34.27", "31.72", "35.83", "29.75", "30.06"], borderColor:'#C97BB0', backgroundColor:'#C97BB022', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartEstr_Pordefinir','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Por definir', data:["0.77", "0.75", "0.73", "0.71", "0.86", "0.69", "0.76", "0.7", "0.62", "0.5", "0.67", "0.43", "0.45", "0.28", "0.21", "0.13", "0.23", "0.23", "0.23", "0.22", "0.41", "2.7", "5.89", "7.86", "10.2", "11.27", "11.49", "14.76", "13.13", "12.92"], borderColor:'#4F9D6E', backgroundColor:'#4F9D6E22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_CENTRO','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'CENTRO', data:["21.62", "18.71", "19.69", "20.38", "26.15", "23.08", "23.89", "26.79", "22.47", "18.02", "23.8", "19.14", "25.51", "21.37", "23.78", "22.48", "25.7", "24.26", "20.97", "17.99", "20.78", "21.63", "21.56", "20.81", "22.29", "20.88", "17.24", "20.18", "17.47", "20.36"], borderColor:'#E94B8A', backgroundColor:'#E94B8A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_LIMA','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'LIMA', data:["21.04", "21.25", "19.48", "21.45", "31.59", "24.41", "23.99", "27.48", "26.46", "23.66", "31.72", "24.02", "23.94", "24.33", "23.73", "24.64", "25.59", "24.07", "20.36", "15.74", "18.43", "18.4", "17.93", "18.23", "19.84", "19.71", "17.8", "19.83", "16.6", "16.73"], borderColor:'#8E3F98', backgroundColor:'#8E3F9822', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_NORTE','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'NORTE', data:["23.64", "22.23", "22.15", "23.92", "27.86", "24.33", "22.76", "25.85", "20.55", "20.74", "24.64", "19.52", "26.88", "22.42", "22.02", "20.48", "24.96", "21.1", "22.3", "17.93", "18.33", "17.54", "18.8", "18.14", "19.2", "17.11", "17.1", "18.4", "15.32", "13.95"], borderColor:'#7BC96F', backgroundColor:'#7BC96F22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_NORTECHICO','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'NORTE CHICO', data:["28.76", "27.21", "27.9", "27.7", "32.39", "29.24", "31.69", "33.28", "33.21", "27.17", "36.51", "34.69", "38.61", "34.4", "34.71", "33.82", "37.69", "29.73", "25.4", "23.24", "21.34", "23.44", "22.71", "25.22", "25.32", "26.79", "24.19", "25.12", "17.68", "20.42"], borderColor:'#F7A64A', backgroundColor:'#F7A64A22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_ORIENTE','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'ORIENTE', data:["18.81", "20.06", "24.9", "27.15", "26.09", "22.3", "24.3", "30.28", "27.24", "23.86", "28.6", "22.63", "31.6", "27.54", "30.96", "30.9", "35.56", "31.5", "27.17", "24.22", "20.7", "18.4", "16.67", "13.64", "15.17", "13.52", "10.72", "13.47", "12.61", "13.11"], borderColor:'#5AA9E6', backgroundColor:'#5AA9E622', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_SUR','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'SUR', data:["24.98", "23.85", "25.32", "24.9", "28.08", "26.99", "26.65", "26.43", "27.64", "25.51", "31.86", "29.43", "33.93", "30.83", "30.53", "33.59", "36.79", "34.28", "28.8", "21.79", "24.16", "26.47", "22.37", "27.3", "26.45", "23.05", "19.49", "22.81", "17.68", "18.45"], borderColor:'#D95D39', backgroundColor:'#D95D3922', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_SURCHICO','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'SUR CHICO', data:["26.26", "25.95", "25.79", "24.28", "32.49", "27.74", "31.27", "35.43", "32.0", "27.28", "41.39", "32.96", "41.14", "40.38", "40.67", "39.49", "42.15", "42.67", "32.78", "28.02", "28.79", "26.95", "25.24", "26.79", "26.22", "23.06", "26.91", "20.66", "21.51", "15.99"], borderColor:'#C97BB0', backgroundColor:'#C97BB022', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartReg_Sinreginasignada','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'Sin región asignada', data:["28.17", "26.77", "29.34", "32.22", "28.48", "34.4", "30.27", "40.0", "34.55", "36.11", "40.23", "36.65", "51.28", "40.47", "47.63", "45.45", "44.82", "44.82", "30.82", "23.42", "32.06", "30.82", "27.55", "33.07", "33.23", "34.79", "28.72", "23.74", "26.93", "11.21"], borderColor:'#4F9D6E', backgroundColor:'#4F9D6E22', fill:true, tension:.3, pointRadius:1.5, borderWidth:2}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60, font:{size:8}}}, y:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} }
+});
+C('chartMixSku','line',{
+  labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+  datasets: [{label:'SKUs distintos vendidos', data:[42, 42, 42, 42, 42, 48, 48, 48, 47, 49, 50, 50, 50, 51, 51, 52, 52, 52, 50, 53, 49, 52, 52, 55, 58, 57, 57, 55, 59, 55], borderColor:'#E94B8A', backgroundColor:'rgba(233,75,138,0.1)', fill:true, tension:.3, pointRadius:2, borderWidth:2.5}]
+},{
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{maxRotation:60,minRotation:60}}, y:{grid:{color:grid}, beginAtZero:true} }
+});
+
+C('chartBenchInterno','bar',{
+  labels: ['Bolivar','Sapolio','Marsella','Opal','Amaras','Dento','Lavax','Trome','Aval','Patito','Amor','Premio','Tao','Klintex'],
+  datasets: [{label:'% DN', data:[71.29,64.28,61.73,48.34,36.54,35.12,30.53,21.0,16.99,4.45,3.25,0.14,0.05,0.02], backgroundColor:['#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#E94B8A','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2','#C9B8C2'], borderRadius:5}]
+},{
+  indexAxis:'y',
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{ x:{grid:{color:grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true}, y:{grid:{display:false}} }
+});
+
+
+</script>
+</body>
+</html>
