@@ -1,0 +1,205 @@
+<!doctype html><html lang='es'><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Piloto Recompra — COE Advanced Analytics</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#2D9C9C;--teal-l:#E8F6F6;--gold:#D4A853;--gold-l:#FDF8EC;--coral:#E85D4C;--coral-l:#FEF0EE;--green:#059669;--green-l:#ECFDF5;--cat:#2D9C9C;--cat-l:#E8F6F6;--cat-border:#A7E0E0;--text:#3D3A36;--text2:#7a7a8a;--text3:#9CA3AF;--bg:#FDFBF7;--bg2:#F8F5F0;--bg3:#F0EDE8;--border:#E8E4DD}
+html{scroll-behavior:smooth;background:#E8E4DD}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cat),#5EBABA);z-index:9999;width:0;transition:width .1s}
+.nav{position:fixed;top:3px;left:0;right:0;z-index:1000;padding:10px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(253,251,247,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);box-shadow:0 2px 14px rgba(0,0,0,.06)}
+.brand{text-decoration:none;display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:40px;padding:6px 14px 6px 7px;box-shadow:0 1px 5px rgba(0,0,0,.06)}
+.brand-t{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:#3D3A36;line-height:1.3}
+.brand-s{font-size:10px;color:#7a7a8a}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;transition:all .2s;letter-spacing:.04em;text-transform:uppercase}
+.nav-links a:hover{color:var(--text);background:var(--border)}
+.section{padding:76px 72px 56px;max-width:1240px;margin:0 auto}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 40px}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 40%,var(--teal-l),transparent),radial-gradient(ellipse 40% 60% at 10% 70%,#E8F6F6,transparent);opacity:.7}
+.hero-inner{text-align:center;max-width:920px;position:relative;z-index:1}
+.hero-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;color:var(--cat);letter-spacing:.22em;text-transform:uppercase;margin-bottom:20px;display:inline-flex;align-items:center;gap:10px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:32px;height:1px;background:var(--cat);opacity:.5}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(44px,6vw,84px);font-weight:800;line-height:1.0;color:var(--text);margin-bottom:4px}
+.hero-title .hl{color:var(--cat)}
+.hero-cat-badge{display:inline-flex;align-items:center;gap:10px;background:var(--cat-l);border:2px solid var(--cat-border);border-radius:40px;padding:8px 22px;margin:16px auto 32px;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--cat)}
+.hero-sub{font-size:16px;color:var(--text2);max-width:680px;margin:0 auto 44px;line-height:1.75}
+.hero-kpis{display:flex;gap:32px;justify-content:center;flex-wrap:wrap}
+.kpi{text-align:center}
+.kpi-v{font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:800;line-height:1}
+.kpi-l{font-size:11px;color:var(--text2);margin-top:6px;text-transform:uppercase;letter-spacing:.08em;line-height:1.4}
+.kpi-div{width:1px;height:52px;background:var(--border);align-self:center}
+.sec-label{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:var(--cat);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--cat-border),transparent)}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3vw,42px);font-weight:800;line-height:1.1;margin-bottom:12px}
+.sec-title em{font-style:normal;color:var(--cat)}
+.sec-lead{font-size:15px;color:var(--text2);max-width:760px;line-height:1.75;margin-bottom:30px}
+.card{background:white;border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(26,26,46,.05)}
+.card-h{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px}
+.card-p{font-size:13px;color:var(--text2);line-height:1.7}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.callout{border-left:3px solid var(--teal);background:var(--teal-l);padding:13px 18px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7;margin:6px 0}
+.callout.cat{border-left-color:var(--cat);background:var(--cat-l)}
+.callout-gold{border-left:3px solid var(--gold);background:var(--gold-l);padding:13px 18px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7}
+.callout-coral{border-left:3px solid var(--coral);background:var(--coral-l);padding:13px 18px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7}
+.callout-green{border-left:3px solid var(--green);background:var(--green-l);padding:13px 18px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px}
+.badge-pos{background:#D1FAE5;color:#059669;border:1px solid #A7F3D0}
+.badge-neg{background:#FEE2E2;color:#E85D4C;border:1px solid #FECACA}
+.badge-info{background:var(--cat-l);color:var(--cat);border:1px solid var(--cat-border)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 12px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl th.num{text-align:right}
+.tbl tr:hover td{background:var(--bg2)}
+.tbl-compact td,.tbl-compact th{padding:7px 10px;font-size:12px}
+.pc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(26,26,46,.05)}
+.pc-l{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.pc-v{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;margin-top:6px;line-height:1}
+.pc-prev{font-size:11px;color:var(--text3);margin-top:4px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#E8E4DD,transparent)}
+.chart{width:100%;height:auto;display:block;font-family:'DM Sans',sans-serif}
+.bar-lbl{font-size:12px;fill:#7a7a8a}
+.bar-val{font-size:12px;fill:#3D3A36;font-weight:600}
+.ax{font-size:11px;fill:#9CA3AF}
+.grid{stroke:#EFEAE1;stroke-width:1}
+.refline{stroke:#B9B0A2;stroke-width:1.5;stroke-dasharray:3 3}
+.paretoline{fill:none;stroke:#2D9C9C;stroke-width:2.5}
+.ciline{stroke:#E85D4C;stroke-width:3}
+.footer{background:#2A2825;padding:34px 72px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
+.footer-kpi{text-align:center}
+.footer-kpi-v{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--cat)}
+.footer-kpi-l{font-size:10px;color:#9CA3AF;margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+@media(max-width:900px){.section{padding:56px 22px 40px}.nav{padding:10px 16px}.nav-links{display:none}.g2,.g3,.g4{grid-template-columns:1fr}.hero-kpis{gap:18px}.footer{padding:26px 22px}}
+</style></head><body>
+<div id="progress"></div>
+<nav class="nav">
+  <a href="#resumen" class="brand"><svg width="26" height="26" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#gCOE)"/><circle cx="12" cy="15" r="3" fill="white"/><circle cx="12" cy="20" r="3" fill="white"/><circle cx="12" cy="25" r="3" fill="white"/><circle cx="20" cy="17" r="3" fill="white" fill-opacity=".7"/><circle cx="20" cy="23" r="3" fill="white" fill-opacity=".7"/><circle cx="28" cy="20" r="4" fill="#D4A853"/><defs><linearGradient id="gCOE" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#E85D4C"/><stop offset="1" stop-color="#C94A3A"/></linearGradient></defs></svg><div><div class="brand-t">COE Advanced Analytics</div><div class="brand-s">Alicorp · Piloto Recompra</div></div></a>
+  <div class="nav-links"><a href="#ciclo">Ciclo</a><a href="#valor">Valor</a><a href="#recurrencia">Recurrencia</a><a href="#recencia">Recencia</a><a href="#impacto">Impacto</a><a href="#segmentacion">Segmentación</a><a href="#proximo">Prueba causal</a></div>
+</nav>
+
+<section id="resumen" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Análisis del Piloto · Lógica Recompra · 2026-07-03</div>
+    <h1 class="hero-title">Resultados del<br><span class="hl">Piloto Recompra</span></h1>
+    <div class="hero-cat-badge">📦 705 pares cliente-SKU · 23 clientes · 36 días</div>
+    <p class="hero-sub">Cada par cliente-SKU evaluado contra su propia historia. La foto de valor es sólida hoy; el impacto sobre la frecuencia de recompra aún madura por la ventana corta.</p>
+    <div class="hero-kpis">
+      <div class="kpi"><div class="kpi-v" style="color:#2D9C9C">S/ 2 456 721</div><div class="kpi-l">Monto recompra · 416.3 t</div></div>
+      <div class="kpi-div"></div>
+      <div class="kpi"><div class="kpi-v">20/23</div><div class="kpi-l">Clientes activados</div></div>
+      <div class="kpi-div"></div>
+      <div class="kpi"><div class="kpi-v">39.7%</div><div class="kpi-l">Captura de pares</div></div>
+      <div class="kpi-div"></div>
+      <div class="kpi"><div class="kpi-v">56</div><div class="kpi-l">Índice recurrencia</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="ciclo" class="section">
+  <div class="sec-label">Fundamento · Ciclo de recompra</div>
+  <h2 class="sec-title">¿Existe un <em>ciclo de recompra</em> por SKU?</h2>
+  <p class="sec-lead">Antes de evaluar el piloto: ¿los clientes mayoristas recompran el mismo SKU siguiendo un ciclo? Miramos 12 meses de relaciones cliente-SKU del canal y medimos qué tan regular es el intervalo entre compras (CV = desviación ÷ media; CV&lt;0.5 = ciclo regular).</p>
+  <div class="g4">
+    <div class="pc"><div class="pc-l">Relaciones cliente-SKU</div><div class="pc-v">29,168</div><div class="pc-prev">246 clientes</div></div>
+    <div class="pc"><div class="pc-l">Con historial ≥3 compras</div><div class="pc-v">15,957</div><div class="pc-prev">55% del total</div></div>
+    <div class="pc"><div class="pc-l">Ciclo regular (CV&lt;0.5)</div><div class="pc-v" style="color:#2D9C9C">5,552</div><div class="pc-prev">19% del total · 35% de estimables</div></div>
+    <div class="pc"><div class="pc-l">Cadencia mediana</div><div class="pc-v" style="color:#2D9C9C">~48d</div><div class="pc-prev">mitad central 34–70d</div></div>
+  </div>
+  <div class="g2" style="margin-top:20px">
+    <div class="card"><h3 class="card-h">Qué tan regular es el ciclo</h3><p class="card-p">Distribución del CV entre las 15,957 relaciones con historial. <b>Regular + muy regular = 5,552</b> (35% de las estimables); el resto recompra de forma irregular.</p><svg viewBox="0 0 560 220" class="chart"><rect x="53.7" y="126.4" width="59.0" height="59.6" rx="4" fill="#1F6F6F"/><text x="83.2" y="119.4" class="bar-val" text-anchor="middle">2,046</text><text x="83.2" y="210.0" class="ax" text-anchor="middle">muy reg.</text><rect x="152.1" y="84.3" width="59.0" height="101.7" rx="4" fill="#2D9C9C"/><text x="181.6" y="77.3" class="bar-val" text-anchor="middle">3,490</text><text x="181.6" y="210.0" class="ax" text-anchor="middle">regular</text><rect x="250.5" y="34.0" width="59.0" height="152.0" rx="4" fill="#D4A853"/><text x="280.0" y="27.0" class="bar-val" text-anchor="middle">5,214</text><text x="280.0" y="210.0" class="ax" text-anchor="middle">semi</text><rect x="348.9" y="84.6" width="59.0" height="101.4" rx="4" fill="#E08A5B"/><text x="378.4" y="77.6" class="bar-val" text-anchor="middle">3,478</text><text x="378.4" y="210.0" class="ax" text-anchor="middle">irregular</text><rect x="447.3" y="136.7" width="59.0" height="49.3" rx="4" fill="#E85D4C"/><text x="476.8" y="129.7" class="bar-val" text-anchor="middle">1,692</text><text x="476.8" y="210.0" class="ax" text-anchor="middle">errático</text></svg></div>
+    <div class="card"><h3 class="card-h">Cada cuánto recompran los regulares</h3><p class="card-p">Intervalo de las 5,552 relaciones con ciclo regular. El grueso cae entre 30 y 90 días; cadencia mediana <b>~48 días</b>.</p><svg viewBox="0 0 560 220" class="chart"><rect x="50.4" y="173.9" width="49.2" height="12.1" rx="4" fill="#8FCFCF"/><text x="75.0" y="166.9" class="bar-val" text-anchor="middle">131</text><text x="75.0" y="210.0" class="ax" text-anchor="middle">0-15d</text><rect x="132.4" y="115.4" width="49.2" height="70.6" rx="4" fill="#2D9C9C"/><text x="157.0" y="108.4" class="bar-val" text-anchor="middle">764</text><text x="157.0" y="210.0" class="ax" text-anchor="middle">15-30d</text><rect x="214.4" y="34.0" width="49.2" height="152.0" rx="4" fill="#1F6F6F"/><text x="239.0" y="27.0" class="bar-val" text-anchor="middle">1,646</text><text x="239.0" y="210.0" class="ax" text-anchor="middle">30-45d</text><rect x="296.4" y="86.8" width="49.2" height="99.2" rx="4" fill="#1F6F6F"/><text x="321.0" y="79.8" class="bar-val" text-anchor="middle">1,074</text><text x="321.0" y="210.0" class="ax" text-anchor="middle">45-60d</text><rect x="378.4" y="72.0" width="49.2" height="114.0" rx="4" fill="#2D9C9C"/><text x="403.0" y="65.0" class="bar-val" text-anchor="middle">1,235</text><text x="403.0" y="210.0" class="ax" text-anchor="middle">60-90d</text><rect x="460.4" y="121.2" width="49.2" height="64.8" rx="4" fill="#8FCFCF"/><text x="485.0" y="114.2" class="bar-val" text-anchor="middle">702</text><text x="485.0" y="210.0" class="ax" text-anchor="middle">90+d</text></svg></div>
+  </div>
+  <div class="callout-green" style="margin-top:16px"><strong>Sí existe ciclo de recompra a nivel SKU.</strong> Hay un núcleo de <b>5,552 relaciones cliente-SKU</b> que recompran de forma regular cada ~48 días — el universo concreto sobre el que opera la lógica.</div>
+  <div class="callout-gold" style="margin-top:6px"><strong>Con honestidad:</strong> el ciclo regular es de una minoría — ~1 de cada 3 relaciones con historial; el resto es semi o irregular. La lógica tiene base sólida en un subconjunto identificable, no en todo el universo. La cohorte del piloto recompra incluso más rápido (~23d) porque se eligió por alta recurrencia.</div>
+</section>
+<div class="divider"></div>
+
+<section id="valor" class="section">
+  <div class="sec-label">Capa 1 · Foto de valor</div>
+  <h2 class="sec-title">Cuánto movió y <em>quién lo mueve</em></h2>
+  <p class="sec-lead">Monto recomendado comprado por cliente activado, con su share de recomendación (qué % de su compra total vino de SKUs recomendados).</p>
+  <div class="g2">
+    <div class="card"><h3 class="card-h">Concentración (Pareto)</h3><p class="card-p">8 clientes concentran el 80% del monto recomendado. Barras = monto; línea = % acumulado.</p><svg viewBox="0 0 560 250" class="chart"><line x1="36" y1="224.8" x2="524" y2="224.8" class="grid"/><text x="30" y="227.8" class="ax" text-anchor="end">0%</text><line x1="36" y1="177.6" x2="524" y2="177.6" class="grid"/><text x="30" y="180.6" class="ax" text-anchor="end">25%</text><line x1="36" y1="130.4" x2="524" y2="130.4" class="grid"/><text x="30" y="133.4" class="ax" text-anchor="end">50%</text><line x1="36" y1="83.2" x2="524" y2="83.2" class="grid"/><text x="30" y="86.2" class="ax" text-anchor="end">75%</text><line x1="36" y1="36.0" x2="524" y2="36.0" class="grid"/><text x="30" y="39.0" class="ax" text-anchor="end">100%</text><rect x="40.9" y="36.0" width="14.6" height="188.8" rx="3" fill="#E2DED7"/><rect x="65.3" y="183.4" width="14.6" height="41.4" rx="3" fill="#E2DED7"/><rect x="89.7" y="186.3" width="14.6" height="38.5" rx="3" fill="#E2DED7"/><rect x="114.1" y="191.9" width="14.6" height="32.9" rx="3" fill="#E2DED7"/><rect x="138.5" y="198.9" width="14.6" height="25.9" rx="3" fill="#E2DED7"/><rect x="162.9" y="200.0" width="14.6" height="24.8" rx="3" fill="#E2DED7"/><rect x="187.3" y="202.1" width="14.6" height="22.7" rx="3" fill="#E2DED7"/><rect x="211.7" y="204.0" width="14.6" height="20.8" rx="3" fill="#E2DED7"/><rect x="236.1" y="204.1" width="14.6" height="20.7" rx="3" fill="#E2DED7"/><rect x="260.5" y="208.9" width="14.6" height="15.9" rx="3" fill="#E2DED7"/><rect x="284.9" y="216.3" width="14.6" height="8.5" rx="3" fill="#E2DED7"/><rect x="309.3" y="216.3" width="14.6" height="8.5" rx="3" fill="#E2DED7"/><rect x="333.7" y="217.7" width="14.6" height="7.1" rx="3" fill="#E2DED7"/><rect x="358.1" y="218.6" width="14.6" height="6.2" rx="3" fill="#E2DED7"/><rect x="382.5" y="218.6" width="14.6" height="6.2" rx="3" fill="#E2DED7"/><rect x="406.9" y="218.8" width="14.6" height="6.0" rx="3" fill="#E2DED7"/><rect x="431.3" y="221.2" width="14.6" height="3.6" rx="3" fill="#E2DED7"/><rect x="455.7" y="221.6" width="14.6" height="3.2" rx="3" fill="#E2DED7"/><rect x="480.1" y="223.0" width="14.6" height="1.8" rx="3" fill="#E2DED7"/><rect x="504.5" y="223.0" width="14.6" height="1.8" rx="3" fill="#E2DED7"/><path d="M48.2,151.4 L72.6,135.3 L97.0,120.2 L121.4,107.6 L145.8,97.4 L170.2,87.7 L194.6,78.9 L219.0,70.7 L243.4,62.8 L267.8,56.6 L292.2,53.4 L316.6,50.0 L341.0,47.1 L365.4,44.9 L389.8,42.4 L414.2,40.2 L438.6,38.6 L463.0,37.3 L487.4,36.8 L511.8,36.0" class="paretoline"/><circle cx="48.2" cy="151.4" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="48.2" y="242" class="ax" text-anchor="middle">1</text><circle cx="72.6" cy="135.3" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="72.6" y="242" class="ax" text-anchor="middle">2</text><circle cx="97.0" cy="120.2" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="97.0" y="242" class="ax" text-anchor="middle">3</text><circle cx="121.4" cy="107.6" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="121.4" y="242" class="ax" text-anchor="middle">4</text><circle cx="145.8" cy="97.4" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="145.8" y="242" class="ax" text-anchor="middle">5</text><circle cx="170.2" cy="87.7" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="170.2" y="242" class="ax" text-anchor="middle">6</text><circle cx="194.6" cy="78.9" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="194.6" y="242" class="ax" text-anchor="middle">7</text><circle cx="219.0" cy="70.7" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="219.0" y="242" class="ax" text-anchor="middle">8</text><circle cx="243.4" cy="62.8" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="243.4" y="242" class="ax" text-anchor="middle">9</text><circle cx="267.8" cy="56.6" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="267.8" y="242" class="ax" text-anchor="middle">10</text><circle cx="292.2" cy="53.4" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="292.2" y="242" class="ax" text-anchor="middle">11</text><circle cx="316.6" cy="50.0" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="316.6" y="242" class="ax" text-anchor="middle">12</text><circle cx="341.0" cy="47.1" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="341.0" y="242" class="ax" text-anchor="middle">13</text><circle cx="365.4" cy="44.9" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="365.4" y="242" class="ax" text-anchor="middle">14</text><circle cx="389.8" cy="42.4" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="389.8" y="242" class="ax" text-anchor="middle">15</text><circle cx="414.2" cy="40.2" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="414.2" y="242" class="ax" text-anchor="middle">16</text><circle cx="438.6" cy="38.6" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="438.6" y="242" class="ax" text-anchor="middle">17</text><circle cx="463.0" cy="37.3" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="463.0" y="242" class="ax" text-anchor="middle">18</text><circle cx="487.4" cy="36.8" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="487.4" y="242" class="ax" text-anchor="middle">19</text><circle cx="511.8" cy="36.0" r="3.4" fill="#D4A853" stroke="#fff" stroke-width="1.2"/><text x="511.8" y="242" class="ax" text-anchor="middle">20</text></svg></div>
+    <div class="card"><h3 class="card-h">Top 8 clientes por monto</h3><p class="card-p">Los 8 que más aportan (≈80% del monto). Share = % de su compra que vino de SKUs recomendados.</p><svg viewBox="0 0 560 338" class="chart"><text x="56" y="28.400000000000002" class="bar-lbl" text-anchor="end">…1852</text><rect x="64" y="8" width="368.0" height="30" rx="4" fill="#2D9C9C"/><text x="440.0" y="28.400000000000002" class="bar-val">S/ 955 682 · 45%</text><text x="56" y="69.4" class="bar-lbl" text-anchor="end">…8223</text><rect x="64" y="49" width="80.7" height="30" rx="4" fill="#2D9C9C"/><text x="152.65270246797576" y="69.4" class="bar-val">S/ 209 452 · 28%</text><text x="56" y="110.4" class="bar-lbl" text-anchor="end">…7615</text><rect x="64" y="90" width="75.0" height="30" rx="4" fill="#2D9C9C"/><text x="147.0372948323815" y="110.4" class="bar-val">S/ 194 869 · 30%</text><text x="56" y="151.4" class="bar-lbl" text-anchor="end">…9210</text><rect x="64" y="131" width="64.2" height="30" rx="4" fill="#2D9C9C"/><text x="136.2046371073223" y="151.4" class="bar-val">S/ 166 737 · 56%</text><text x="56" y="192.4" class="bar-lbl" text-anchor="end">…9336</text><rect x="64" y="172" width="50.4" height="30" rx="4" fill="#2D9C9C"/><text x="122.44894849960552" y="192.4" class="bar-val">S/ 131 014 · 4%</text><text x="56" y="233.4" class="bar-lbl" text-anchor="end">…8661</text><rect x="64" y="213" width="48.3" height="30" rx="4" fill="#2D9C9C"/><text x="120.26716836772064" y="233.4" class="bar-val">S/ 125 348 · 11%</text><text x="56" y="274.4" class="bar-lbl" text-anchor="end">…2192</text><rect x="64" y="254" width="44.3" height="30" rx="4" fill="#2D9C9C"/><text x="116.30215071540533" y="274.4" class="bar-val">S/ 115 051 · 45%</text><text x="56" y="315.4" class="bar-lbl" text-anchor="end">…8899</text><rect x="64" y="295" width="40.6" height="30" rx="4" fill="#2D9C9C"/><text x="112.5843450017893" y="315.4" class="bar-val">S/ 105 396 · 23%</text></svg></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="recurrencia" class="section">
+  <div class="sec-label">Capa 1 · Calidad del targeting</div>
+  <h2 class="sec-title">La <em>matriz de recurrencia</em></h2>
+  <p class="sec-lead">Cada SKU se puntúa según en cuántos de los últimos 6 meses el cliente lo compró. El piloto apunta bien: 47% de los pares está en nivel 5-6/6.</p>
+  <div class="g2">
+    <div class="card"><table class="tbl"><tr><th>Meses con compra (de 6)</th><th>Puntos</th><th>Lectura</th></tr>
+    <tr><td><span class="dot" style="background:#1F6F6F"></span>6 de 6</td><td>100</td><td>Recompra perfecta</td></tr>
+    <tr><td><span class="dot" style="background:#2D9C9C"></span>4–5 de 6</td><td>60</td><td>Recurrente</td></tr>
+    <tr><td><span class="dot" style="background:#D4A853"></span>2–3 de 6</td><td>20</td><td>Esporádico</td></tr>
+    <tr><td><span class="dot" style="background:#E85D4C"></span>1 de 6</td><td>0</td><td>Marginal</td></tr></table>
+    <p class="card-p" style="margin-top:14px">Perfil: <b>&gt;80 Alto · 60–80 Moderado · &lt;60 Bajo</b>. Intervalo de recompra mediano: <b>23 días</b>.</p></div>
+    <div class="card"><h3 class="card-h">Convierte mejor donde es más recurrente</h3><p class="card-p">Captura en SKUs 5-6/6 = <b>55%</b> vs <b>21%</b> en 1-3/6 (~2.6× más). El nivel 6/6 aporta el <b>68%</b> del monto.</p><svg viewBox="0 0 560 240" class="chart"><line x1="36" y1="207.6" x2="524" y2="207.6" class="grid"/><text x="30" y="210.6" class="ax" text-anchor="end">0%</text><line x1="36" y1="121.7" x2="524" y2="121.7" class="grid"/><text x="30" y="124.7" class="ax" text-anchor="end">32%</text><line x1="36" y1="35.7" x2="524" y2="35.7" class="grid"/><text x="30" y="38.7" class="ax" text-anchor="end">64%</text><rect x="53.9" y="36.0" width="45.5" height="171.6" rx="3" fill="#1F6F6F"/><text x="76.7" y="29.0" class="bar-val" text-anchor="middle">64%</text><text x="76.7" y="228" class="ax" text-anchor="middle">6/6</text><rect x="135.2" y="99.4" width="45.5" height="108.2" rx="3" fill="#2D9C9C"/><text x="158.0" y="92.4" class="bar-val" text-anchor="middle">40%</text><text x="158.0" y="228" class="ax" text-anchor="middle">5/6</text><rect x="216.6" y="103.7" width="45.5" height="103.9" rx="3" fill="#5EBABA"/><text x="239.3" y="96.7" class="bar-val" text-anchor="middle">39%</text><text x="239.3" y="228" class="ax" text-anchor="middle">4/6</text><rect x="297.9" y="139.9" width="45.5" height="67.7" rx="3" fill="#8FCFCF"/><text x="320.7" y="132.9" class="bar-val" text-anchor="middle">25%</text><text x="320.7" y="228" class="ax" text-anchor="middle">3/6</text><rect x="379.2" y="159.0" width="45.5" height="48.6" rx="3" fill="#D4A853"/><text x="402.0" y="152.0" class="bar-val" text-anchor="middle">18%</text><text x="402.0" y="228" class="ax" text-anchor="middle">2/6</text><rect x="460.6" y="166.8" width="45.5" height="40.8" rx="3" fill="#E0BC7A"/><text x="483.3" y="159.8" class="bar-val" text-anchor="middle">15%</text><text x="483.3" y="228" class="ax" text-anchor="middle">1/6</text></svg></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section id="recencia" class="section">
+  <div class="sec-label">Capa 1 · Recencia y recompra</div>
+  <h2 class="sec-title"><em>Recencia</em> y recompra a tiempo</h2>
+  <p class="sec-lead">Hace cuánto compraron por última vez, y si volvieron dentro de su ciclo. Una sola compra ya dice si recompraron a tiempo.</p>
+  <div class="card"><h3 class="card-h">Hace cuánto compraron el SKU por última vez</h3><p class="card-p"><b>62%</b> compró en los últimos 30 días · mediana <b>21 días</b>. La cohorte es de productos de compra reciente y activa.</p><svg viewBox="0 0 560 210" class="chart"><rect x="50.8" y="32.0" width="61.5" height="149.2" rx="4" fill="#D4A853"/><text x="81.6" y="25.0" class="bar-val" text-anchor="middle">247</text><text x="81.6" y="200" class="ax" text-anchor="middle">0-15d</text><rect x="150.0" y="64.6" width="61.5" height="116.6" rx="4" fill="#D4A853"/><text x="180.8" y="57.6" class="bar-val" text-anchor="middle">193</text><text x="180.8" y="200" class="ax" text-anchor="middle">15-30d</text><rect x="249.2" y="87.6" width="61.5" height="93.6" rx="4" fill="#D4A853"/><text x="280.0" y="80.6" class="bar-val" text-anchor="middle">155</text><text x="280.0" y="200" class="ax" text-anchor="middle">30-60d</text><rect x="348.4" y="143.1" width="61.5" height="38.1" rx="4" fill="#D4A853"/><text x="379.2" y="136.1" class="bar-val" text-anchor="middle">63</text><text x="379.2" y="200" class="ax" text-anchor="middle">60-90d</text><rect x="447.6" y="152.8" width="61.5" height="28.4" rx="4" fill="#D4A853"/><text x="478.4" y="145.8" class="bar-val" text-anchor="middle">47</text><text x="478.4" y="200" class="ax" text-anchor="middle">90+d</text></svg></div>
+  <div class="g3" style="margin-top:20px">
+    <div class="pc"><div class="pc-l">Recompró en ciclo</div><div class="pc-v" style="color:#059669">56%</div><div class="pc-prev">aún no vencidos · S/ 1 444 342</div><span class="badge badge-pos">a tiempo</span></div>
+    <div class="pc"><div class="pc-l">Reactivación</div><div class="pc-v" style="color:#D4A853">122</div><div class="pc-prev">estaban vencidos y volvieron · S/ 44 403</div><span class="badge badge-info">win-back</span></div>
+    <div class="pc"><div class="pc-l">Recencia al recomprar</div><div class="pc-v">20d</div><div class="pc-prev">dentro de su ciclo de 17d</div><span class="badge" style="background:#F0EDE8;color:#7a7a8a">en cadencia</span></div>
+  </div>
+  <div class="callout cat" style="margin-top:16px">De los <b>280</b> pares que recompraron, la mayoría (<b>56%</b>) estaba <strong>aún dentro de su ciclo</strong> (no vencida) y el resto fue reactivación de vencidos. Es un dato descriptivo de timing; si la recomendación <em>adelantó</em> la compra se evalúa con la ventana madura.</div>
+</section>
+<div class="divider"></div>
+
+<section id="impacto" class="section">
+  <div class="sec-label">Pendiente · Compresión del ciclo</div>
+  <h2 class="sec-title">¿<em>Aceleró</em> la recompra? — aún no medible</h2>
+  <p class="sec-lead">El piloto lleva una ventana de 36 días. Saber si la recomendación cambió la frecuencia o acortó el ciclo necesita más tiempo; aquí mostramos solo la cadencia histórica que servirá de vara.</p>
+  <div class="card"><h3 class="card-h">Cada cuánto recompran (baseline histórico)</h3><p class="card-p">Intervalo de recompra por par antes del piloto. Mediana <b>24 días</b> · mitad central 14–36. Es la referencia contra la cual se medirá cualquier cambio.</p><svg viewBox="0 0 560 210" class="chart"><rect x="47.7" y="152.0" width="51.3" height="29.2" rx="4" fill="#2D9C9C"/><text x="73.3" y="145.0" class="bar-val" text-anchor="middle">26</text><text x="73.3" y="200" class="ax" text-anchor="middle"><7d</text><rect x="130.4" y="32.0" width="51.3" height="149.2" rx="4" fill="#2D9C9C"/><text x="156.0" y="25.0" class="bar-val" text-anchor="middle">133</text><text x="156.0" y="200" class="ax" text-anchor="middle">7-14d</text><rect x="213.0" y="33.1" width="51.3" height="148.1" rx="4" fill="#2D9C9C"/><text x="238.7" y="26.1" class="bar-val" text-anchor="middle">132</text><text x="238.7" y="200" class="ax" text-anchor="middle">14-21d</text><rect x="295.7" y="33.1" width="51.3" height="148.1" rx="4" fill="#2D9C9C"/><text x="321.3" y="26.1" class="bar-val" text-anchor="middle">132</text><text x="321.3" y="200" class="ax" text-anchor="middle">21-30d</text><rect x="378.4" y="36.5" width="51.3" height="144.7" rx="4" fill="#2D9C9C"/><text x="404.0" y="29.5" class="bar-val" text-anchor="middle">129</text><text x="404.0" y="200" class="ax" text-anchor="middle">30-45d</text><rect x="461.0" y="58.9" width="51.3" height="122.3" rx="4" fill="#2D9C9C"/><text x="486.7" y="51.9" class="bar-val" text-anchor="middle">109</text><text x="486.7" y="200" class="ax" text-anchor="middle">45+d</text></svg></div>
+  <div class="callout-gold" style="margin-top:16px"><strong>Qué falta para medir la compresión.</strong> Saber si el cliente pasa de recomprar cada 24d a hacerlo antes necesita <b>2+ recompras por par</b> — hoy solo 97 de 705 las tienen — y se mide hacia <b>julio</b>. Con 36 días solo se ven las recompras rápidas (censura). Para afirmar <b>causalmente</b> que acelera, el próximo paso es un <b>holdout</b> — al final del reporte.</div>
+</section>
+<div class="divider"></div>
+
+<section id="segmentacion" class="section">
+  <div class="sec-label">Segmentación · Dónde mueve la aguja</div>
+  <h2 class="sec-title">Dónde <em>mueve la aguja</em></h2>
+  <p class="sec-lead">Cada par según su estado de recompra al lanzamiento: <b>Al día</b> (compró hace menos que su intervalo), <b>Vencido</b> (se pasó hasta 2× su intervalo) y <b>Dormido</b> (dejó de comprarlo).</p>
+  <div class="g2">
+    <div class="card"><svg viewBox="0 0 560 250" class="chart"><line x1="36" y1="210.4" x2="524" y2="210.4" class="grid"/><text x="30" y="213.4" class="ax" text-anchor="end">0%</text><line x1="36" y1="123.6" x2="524" y2="123.6" class="grid"/><text x="30" y="126.6" class="ax" text-anchor="end">22%</text><line x1="36" y1="36.8" x2="524" y2="36.8" class="grid"/><text x="30" y="39.8" class="ax" text-anchor="end">44%</text><rect x="83.2" y="36.0" width="68.3" height="174.4" rx="4" fill="#2D9C9C"/><text x="117.3" y="28.0" class="bar-val" text-anchor="middle">44.2%</text><text x="117.3" y="224" class="ax" text-anchor="middle" style="font-weight:700;fill:#3D3A36">Al día</text><text x="117.3" y="238" class="ax" text-anchor="middle">49% · S/ 1 435 887</text><rect x="245.8" y="63.2" width="68.3" height="147.2" rx="4" fill="#D4A853"/><text x="280.0" y="55.2" class="bar-val" text-anchor="middle">37.3%</text><text x="280.0" y="224" class="ax" text-anchor="middle" style="font-weight:700;fill:#3D3A36">Vencido</text><text x="280.0" y="238" class="ax" text-anchor="middle">31% · S/ 751 445</text><rect x="408.5" y="81.8" width="68.3" height="128.6" rx="4" fill="#E85D4C"/><text x="442.7" y="73.8" class="bar-val" text-anchor="middle">32.6%</text><text x="442.7" y="224" class="ax" text-anchor="middle" style="font-weight:700;fill:#3D3A36">Dormido</text><text x="442.7" y="238" class="ax" text-anchor="middle">20% · S/ 269 389</text></svg><p class="card-p" style="text-align:center;margin-top:12px">Tasa de captura por segmento. El piloto recompra mejor lo que <b>ya estaba en ciclo</b>, peor lo <b>dormido</b> — donde está el margen real.</p></div>
+    <div class="card"><table class="tbl tbl-compact"><tr><th>Segmento</th><th class="num">Pares</th><th class="num">%</th><th class="num">Captura</th><th class="num">Monto</th><th class="num">Oport.</th></tr><tr><td><span class="dot" style="background:#2D9C9C"></span><b>Al día</b></td><td class="num">344</td><td class="num">49%</td><td class="num">44.2%</td><td class="num">S/ 1 435 887</td><td class="num">S/ 757 400</td></tr><tr><td><span class="dot" style="background:#D4A853"></span><b>Vencido</b></td><td class="num">220</td><td class="num">31%</td><td class="num">37.3%</td><td class="num">S/ 751 445</td><td class="num">S/ 783 470</td></tr><tr><td><span class="dot" style="background:#E85D4C"></span><b>Dormido</b></td><td class="num">141</td><td class="num">20%</td><td class="num">32.6%</td><td class="num">S/ 269 389</td><td class="num">S/ 537 500</td></tr></table></div>
+  </div>
+  <div class="callout-coral" style="margin-top:16px"><strong>Lectura para el piloto.</strong> El 59% ya estaba al día — recomendarle lo que ya compra es <b>mantenimiento</b> (techo bajo). El segmento <b>Dormido</b> (17%) es donde vive la reactivación, hoy convierte solo 33% con S/ 537 500 de oportunidad. <b>El impacto de recompra de verdad está en mover lo dormido.</b></div>
+</section>
+<div class="divider"></div>
+
+<section id="sustento" class="section">
+  <div class="sec-label">Cómo leer · Sustento</div>
+  <h2 class="sec-title">Cómo leer <em>estos números</em></h2>
+  <div class="g2">
+    <div class="callout-green"><strong>Lo defendible hoy:</strong> escala (S/ 2 456 721), concentración (8 clientes = 80%), targeting (47% en 5-6/6) y reactivación de SKUs vencidos (S/ 44 403).</div>
+    <div class="callout-coral"><strong>Lo que aún no se afirma:</strong> que el piloto aumentó la frecuencia de recompra. El dato es plano e indistinguible del año anterior por la ventana corta — no porque no funcione.</div>
+    <div class="callout"><strong>n = 23 clientes:</strong> muestra chica; se reportan intervalos de confianza y el error se agrupa por cliente (los SKUs de un mismo cliente no son independientes).</div>
+    <div class="callout-gold"><strong>Oportunidad pendiente:</strong> el catálogo recomendado aún sin comprar es grande, pero es tamaño bruto (asume una compra por par), no upside garantizado.</div>
+  </div>
+  <div class="callout-green" style="margin-top:16px"><strong>Lo que el piloto ya ganó:</strong> demostró que el <b>targeting funciona</b> — captura 39.7% de recompra, concentrada donde debe: <b>55%</b> en los pares de alta recurrencia (5-6/6) vs <b>21%</b> en los de baja (1-3/6), ~2.6× más. Eso justifica escalar — y hacerlo con un holdout para medir la aceleración de forma inatacable.</div>
+
+</section>
+<div class="divider"></div>
+
+<footer class="footer">
+  <div style="display:flex;align-items:center;gap:16px"><svg width="120" height="32" viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="38" height="32" rx="6" fill="#2D9C9C"/><text x="19" y="22" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="15" font-weight="800" fill="white" letter-spacing="1">COE</text><text x="46" y="13" font-family="Space Grotesk,sans-serif" font-size="9" font-weight="700" fill="#2D9C9C" letter-spacing="0.5">ADVANCED</text><text x="46" y="25" font-family="Space Grotesk,sans-serif" font-size="9" font-weight="700" fill="#3D3A36" letter-spacing="0.5">ANALYTICS</text></svg><div><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff">Piloto Recompra · Canal Mayorista</div><div style="font-size:11px;color:#9CA3AF;margin-top:3px">2026-07-03 · Alicorp · ventana 36 días</div></div></div>
+  <div style="display:flex;gap:32px;flex-wrap:wrap">
+    <div class="footer-kpi"><div class="footer-kpi-v">S/ 2 456 721</div><div class="footer-kpi-l">Monto recompra</div></div>
+    <div class="footer-kpi"><div class="footer-kpi-v" style="color:#D4A853">39.7%</div><div class="footer-kpi-l">Captura</div></div>
+    <div class="footer-kpi"><div class="footer-kpi-v">20/23</div><div class="footer-kpi-l">Clientes</div></div>
+  </div>
+</footer>
+<script>var pr=document.getElementById('progress');addEventListener('scroll',function(){var h=document.documentElement;pr.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});</script></body></html>
