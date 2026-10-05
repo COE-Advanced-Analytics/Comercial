@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dos palancas: Imperdonables e Infaltables</title>
+<style>
+:root{--bg:#F4F1EB;--ink:#1A1A2E;--text:#3D3A36;--muted:#6E6A63;--line:#D9D2C4;--card:#FFFFFF;
+--teal:#2D9C9C;--teal-d:#1E7272;--teal-t:#E2F1F0;--coral:#E85D4C;--coral-d:#B5392A;--coral-t:#FBE6E2;--gold:#C99A3E}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#E4DED2;font-family:Arial,Helvetica,sans-serif;color:var(--text);overflow:hidden}
+.escenario{position:fixed;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:40px 64px 30px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transition:opacity .25s ease}
+.slide.activa{opacity:1;visibility:visible}
+@media (prefers-reduced-motion: reduce){.slide{transition:none}}
+.cabecera{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.seccion{font-size:15px;font-weight:bold;color:var(--teal-d)}
+.nuevo .seccion{color:var(--coral-d)}
+.general .seccion{color:var(--teal-d)}
+.paso{font-weight:normal;color:var(--muted);margin-left:14px}
+.etiqueta{font-size:13px;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:5px 14px}
+h1{font-size:40px;line-height:1.12;color:var(--ink);margin:0 0 10px;max-width:1060px}
+h2{font-size:21px;color:var(--ink);margin:0 0 6px}
+h3{font-size:18px;color:var(--ink);margin:0 0 6px}
+p{margin:0}
+.bajada{font-size:19px;line-height:1.45;max-width:980px}
+.cuerpo{flex:1;display:flex;gap:32px;margin-top:20px;min-height:0;align-items:center}
+.cuerpo.dos{align-items:stretch}
+.cuerpo.dos>*{flex:1}
+.cuerpo.dos.arriba{align-items:flex-start}
+.columna-unica{flex-direction:column;align-items:stretch;justify-content:center;gap:20px}
+.columna-unica.centrado{align-items:center}
+.recuadro{margin-top:16px;background:var(--teal-t);border-left:6px solid var(--teal);padding:14px 22px;font-size:19px;line-height:1.4;
+  color:var(--ink);font-weight:bold;border-radius:0 8px 8px 0}
+.nuevo .recuadro{background:var(--coral-t);border-left-color:var(--coral)}
+.general .recuadro{background:#E9E3D8;border-left-color:var(--ink)}
+.pie{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:12px;padding-right:110px}
+.pie .numero{font-weight:bold;color:var(--ink)}
+.pie .fuente{flex:1;text-align:right}
+.tarjeta{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.tarjeta p{font-size:16px;line-height:1.45}
+.nota-tarjeta{font-size:15px;color:var(--muted);margin:2px 0 14px}
+/* portada */
+.portada .portada-cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}
+.portada h1{font-size:52px;max-width:1152px;margin-bottom:14px}
+.portada .bajada{font-size:21px;max-width:880px}
+.palancas{display:flex;gap:28px;margin-top:34px}
+.palanca{flex:1;border-top:8px solid var(--teal);background:var(--card);border-radius:4px 4px 10px 10px;padding:22px 26px 24px}
+.palanca.nuevo{border-top-color:var(--coral)}
+.palanca-nombre{font-size:64px;font-weight:bold;line-height:1;color:var(--teal-d)}
+.palanca.nuevo .palanca-nombre{color:var(--coral-d)}
+.palanca-modelo{font-size:18px;font-weight:bold;color:var(--ink);margin:10px 0 4px}
+.palanca p{font-size:17px;margin-bottom:16px}
+.tira-doble{display:flex;flex-direction:column;gap:5px}
+/* comparación */
+.comparacion{width:100%;border-collapse:collapse;font-size:18px}
+.comparacion th,.comparacion td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.comparacion thead th{font-size:19px;color:#fff;border-bottom:none}
+.comparacion thead th.col-aum{background:var(--teal-d);border-radius:8px 0 0 0}
+.comparacion thead th.col-nue{background:var(--coral-d);border-radius:0 8px 0 0}
+.comparacion tbody th{font-weight:normal;color:var(--muted);width:200px;font-size:16px}
+.comparacion td{color:var(--ink);background:rgba(255,255,255,.55)}
+.comparacion td.grande{font-weight:bold;font-size:19px}
+.comparacion td.compartido{text-align:center}
+/* aumentar 1 */
+.pasos-chicos{margin:0;padding-left:24px;font-size:17px;line-height:1.5;max-width:330px}
+.pasos-chicos li{margin-bottom:12px}
+.figura{margin:0}
+.figura figcaption{font-size:15px;color:var(--muted);max-width:680px;margin-top:6px;line-height:1.4}
+/* aumentar 2 */
+.formula{font-size:22px;font-weight:bold;color:var(--ink);line-height:1.35}
+.formula.apilada{display:flex;flex-direction:column;font-size:24px;line-height:1.3;margin-bottom:18px}
+.formula.apilada .mult{color:var(--teal-d)}
+.componentes{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;margin:0}
+.componentes dt,.definiciones dt{font-weight:bold;color:var(--ink);font-size:16px}
+.componentes dd,.definiciones dd{margin:2px 0 0;font-size:15px;line-height:1.4}
+.barras{display:flex;flex-direction:column;gap:14px}
+.barra{display:grid;grid-template-columns:110px 1fr;grid-template-rows:auto auto;column-gap:12px;font-size:15px}
+.b-nombre{grid-row:1/3;align-self:center;font-weight:bold;color:var(--ink)}
+.b-pista{height:16px;background:#EEE9DF;border-radius:4px;overflow:hidden}
+.b-pista span{display:block;height:100%;background:var(--teal)}
+.b-valor{color:var(--muted);font-size:14px;margin-top:3px}
+/* aumentar 3 */
+.columna{flex:1;display:flex;flex-direction:column;gap:18px;max-width:560px}
+.definiciones{margin:0;display:flex;flex-direction:column;gap:10px}
+.casos{border-collapse:collapse;font-size:15px;width:100%}
+.casos th,.casos td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right}
+.casos th:first-child,.casos td:first-child{text-align:left}
+.casos thead th{color:var(--muted);font-weight:normal}
+.casos tr.gana td{font-weight:bold;color:var(--teal-d)}
+/* bloques y tiras */
+.bloques{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 32px}
+.bloques li{display:flex;gap:12px;font-size:16px;line-height:1.4;align-items:flex-start}
+.chip{flex:none;width:22px;height:22px;border-radius:5px;margin-top:1px}
+.tira-bloque{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 22px}
+.tira-titulo{font-size:15px;color:var(--muted);margin-bottom:10px}
+.tira-leyenda{display:flex;gap:28px;font-size:16px;margin-top:10px;color:var(--text)}
+.tira-leyenda b{font-size:20px;color:var(--ink)}
+/* nuevo */
+.grande-nuevo{font-size:24px}
+.cuatro{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.cuatro .tarjeta{border-top:5px solid var(--coral);border-radius:4px 4px 10px 10px}
+.cuatro .tarjeta p{font-size:15px}
+.segmentos{font-size:15px;color:var(--muted)}
+.cifras{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-bottom:6px}
+.cifras div{display:flex;flex-direction:column}
+.cifra{font-size:46px;font-weight:bold;color:var(--ink);line-height:1.05}
+.cifra.alerta{color:var(--coral-d)}
+.cifras span:last-child{font-size:15px;color:var(--muted)}
+.reglas{margin:0;padding-left:20px;font-size:16px;line-height:1.45;display:flex;flex-direction:column;gap:9px}
+/* mes */
+.mes svg{display:block;margin:0 auto}
+.dos-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.comunes{font-size:16px;color:var(--text)}
+/* flujo */
+.flujo{display:flex;align-items:center;gap:10px;margin-top:22px}
+.paso-flujo{flex:1;background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:14px 8px;text-align:center;
+  font-size:17px;font-weight:bold;color:var(--ink);line-height:1.2}
+.paso-flujo small{font-weight:normal;font-size:13px;color:var(--muted)}
+.paso-flujo.oscuro{background:var(--ink);color:#fff}
+.paso-flujo.oscuro small{color:#D9D6E8}
+.flecha{flex:none;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid var(--ink)}
+.separado{margin-top:14px}
+/* controles de navegación */
+.controles{position:fixed;right:16px;bottom:14px;display:flex;gap:8px;z-index:5}
+.controles button{font:bold 18px Arial,sans-serif;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ink);
+  background:#fff;color:var(--ink);cursor:pointer}
+.controles button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.controles button:disabled{opacity:.35;cursor:default}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;background:var(--bg)}
+  .escenario{position:static;transform:none!important;width:1280px;height:auto}
+  .slide{position:relative;opacity:1;visibility:visible;width:1280px;height:720px;break-after:page}
+  .controles{display:none}
+}
+</style>
+</head>
+<body>
+<main class="escenario" aria-roledescription="presentación">
+
+<section class="slide general portada" aria-label="Portada">
+  <header class="cabecera"><span class="seccion">Canal mayorista</span><span class="etiqueta">Web Aliados</span></header>
+  <div class="portada-cuerpo">
+    <h1>Dos palancas para crecer con cada cliente</h1>
+    <p class="bajada">Cómo se arman los dos carruseles de la web: Imperdonables, para que compre más de lo que ya compra, e Infaltables, para que pruebe lo que todavía no compra.</p>
+    <div class="palancas">
+      <div class="palanca aumentar">
+        <div class="palanca-nombre">Aumentar</div>
+        <div class="palanca-modelo">Imperdonables, carrusel 2</div>
+        <p>Lo que ya compra y le toca reponer.</p>
+        <div class="tira-doble"><svg viewBox="0 0 520 30" width="520" height="30" role="img" aria-label="15 casillas">
+<rect x="0" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="35" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="70" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="105" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="140" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="175" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="210" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="245" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="280" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="315" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="350" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="385" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="420" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="455" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="490" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+</svg><svg viewBox="0 0 520 30" width="520" height="30" role="img" aria-label="15 casillas">
+<rect x="0" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="35" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="70" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="105" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="140" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="175" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="210" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="245" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="280" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="315" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="350" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="385" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="420" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="455" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+<rect x="490" y="0" width="30" height="30" rx="5" fill="#2D9C9C"/>
+</svg></div>
+      </div>
+      <div class="palanca nuevo">
+        <div class="palanca-nombre">Nuevo</div>
+        <div class="palanca-modelo">Infaltables, carrusel 3</div>
+        <p>Lo que todavía no compra y debería probar.</p>
+        <div class="tira-doble"><svg viewBox="0 0 520 30" width="520" height="30" role="img" aria-label="15 casillas">
+<rect x="0" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="35" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="70" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="105" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="140" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="175" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="210" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="245" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="280" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="315" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="350" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="385" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="420" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="455" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="490" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+</svg><svg viewBox="0 0 520 30" width="520" height="30" role="img" aria-label="15 casillas">
+<rect x="0" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="35" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="70" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="105" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="140" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="175" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="210" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="245" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="280" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="315" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="350" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="385" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="420" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="455" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+<rect x="490" y="0" width="30" height="30" rx="5" fill="#E85D4C"/>
+</svg></div>
+      </div>
+    </div>
+  </div>
+  <footer class="pie"><span class="numero">1 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Octubre 2026</span></footer>
+</section>
+<section class="slide general" aria-label="Las dos palancas">
+  <header class="cabecera"><span class="seccion">Las dos palancas</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>Dos preguntas distintas, dos carruseles</h1>
+  <div class="cuerpo">
+    <table class="comparacion">
+      <thead><tr><th></th><th class="col-aum">Aumentar: Imperdonables</th><th class="col-nue">Nuevo: Infaltables</th></tr></thead>
+      <tbody>
+        <tr><th>Qué responde</th><td class="grande">¿Qué le toca reponer hoy?</td><td class="grande">¿Qué debería empezar a comprar?</td></tr>
+        <tr><th>Qué productos</th><td>Solo core (CP1) que ya compra</td><td>Core y value (CP1 y CP2) que no compró en 12 meses</td></tr>
+        <tr><th>Para quién</th><td colspan="2" class="compartido">Clientes MA, en las dos palancas</td></tr>
+        <tr><th>Con qué historia</th><td>12 meses hasta el último mes cerrado</td><td>12 meses hasta el mes anterior al último cerrado</td></tr>
+        <tr><th>Cuándo se calcula</th><td>Cada lunes, con la fecha del día</td><td>Una vez al mes; los lunes solo se reordena</td></tr>
+        <tr><th>En la web</th><td>Carrusel 2, siempre 30 productos</td><td>Carrusel 3, siempre 30 productos</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="recuadro">Cada cliente MA ve 60 productos, 30 en cada carrusel, y ninguno se repite entre los dos.</div>
+  <footer class="pie"><span class="numero">2 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+<section class="slide aumentar" aria-label="Aumentar, paso 1">
+  <header class="cabecera"><span class="seccion">Palanca Aumentar: Imperdonables<span class="paso">Paso 1 de 4</span></span><span class="etiqueta">Web Aliados</span></header>
+  <h1>¿Le toca reponer?</h1>
+  <p class="bajada">Para cada producto que el cliente compró al menos dos veces en el año, el modelo mira cada cuántos días lo pide y calcula cuándo le toca de nuevo.</p>
+  <div class="cuerpo">
+    <ol class="pasos-chicos">
+      <li><b>Su ciclo.</b> El promedio de días entre una compra y la siguiente.</li>
+      <li><b>Cuándo le toca.</b> Última compra + su ciclo.</li>
+      <li><b>La ventana.</b> Se abre 7 días antes de esa fecha y dura 14. Si hoy cae dentro, el producto es candidato.</li>
+    </ol>
+    <figure class="figura">
+      <svg viewBox="0 0 760 236" width="760" height="236" role="img" aria-label="Línea de tiempo de la ventana de recompra">
+<line x1="24" y1="160" x2="736" y2="160" stroke="#D9D2C4" stroke-width="2"/>
+<rect x="435.4" y="132" width="221.5" height="56" rx="6" fill="#E2F1F0" stroke="#2D9C9C" stroke-width="2"/>
+<text x="442.4" y="179" font-size="13" fill="#1E7272">25 abr</text>
+<text x="649.9" y="179" font-size="13" fill="#1E7272" text-anchor="end">9 may</text>
+<text x="546.1" y="212" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">ventana de 14 días</text>
+<path d="M 245.5 149 C 305.5 42, 486.1 42, 546.1 130" fill="none" stroke="#1E7272" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="355.8" y="54" font-size="15" fill="#1E7272" text-anchor="middle">le toca 19 días después</text>
+<circle cx="546.1" cy="132" r="5" fill="#1E7272"/>
+<circle cx="245.5" cy="160" r="9" fill="#2D9C9C"/>
+<text x="245.5" y="190" font-size="14" fill="#3D3A36" text-anchor="middle">13 abr</text>
+<text x="245.5" y="208" font-size="13" fill="#6E6A63" text-anchor="middle">última compra</text>
+<line x1="530.3" y1="42" x2="530.3" y2="188" stroke="#E85D4C" stroke-width="3"/>
+<rect x="466.3" y="14" width="128" height="28" rx="14" fill="#E85D4C"/>
+<text x="530.3" y="33" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">hoy, 1 de mayo</text>
+</svg>
+      <figcaption>Galleta rellena de vainilla 34 g en un mayorista de Trujillo: 18 compras en 12 meses, una cada 19 días. Le tocaba el 2 de mayo, la ventana va del 25 de abril al 9 de mayo y hoy es 1 de mayo: entra.</figcaption>
+    </figure>
+  </div>
+  <div class="recuadro">Todos los días se abren ventanas nuevas. Por eso Imperdonables se recalcula cada lunes.</div>
+  <footer class="pie"><span class="numero">3 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Ejemplo de la corrida de mayo 2026</span></footer>
+</section>
+<section class="slide aumentar" aria-label="Aumentar, paso 2">
+  <header class="cabecera"><span class="seccion">Palanca Aumentar: Imperdonables<span class="paso">Paso 2 de 4</span></span><span class="etiqueta">Web Aliados</span></header>
+  <h1>¿Cuáles entran y cuántos de cada categoría?</h1>
+  <div class="cuerpo dos">
+    <div class="tarjeta formula-tarjeta">
+      <div class="formula apilada"><span>40% días sin comprar</span><span>+ 30% frecuencia</span><span>+ 30% margen directo</span><span class="mult">× factor estacional del mes</span></div>
+      <dl class="componentes">
+        <div><dt>Días sin comprar</dt><dd>Cuánto lleva sin pedirlo.</dd></div>
+        <div><dt>Frecuencia</dt><dd>Qué tan seguido lo compra.</dd></div>
+        <div><dt>Margen directo</dt><dd>Cuánto deja al mes.</dd></div>
+        <div><dt>Factor estacional</dt><dd>Si en este mes se vende más o menos que en el resto del año.</dd></div>
+      </dl>
+    </div>
+    <div class="tarjeta">
+      <h2>Tope por categoría</h2>
+      <p class="nota-tarjeta">Cada categoría puede tener hasta 30 × el % de pedidos del cliente en que aparece.</p>
+      <div class="barras">
+        <div class="barra"><span class="b-nombre">Detergentes</span><span class="b-pista"><span style="width:79.4%"></span></span><span class="b-valor">79% de pedidos, hasta 24</span></div>
+        <div class="barra"><span class="b-nombre">Galletas</span><span class="b-pista"><span style="width:71.4%"></span></span><span class="b-valor">71%, hasta 21</span></div>
+        <div class="barra"><span class="b-nombre">Postres</span><span class="b-pista"><span style="width:66.7%"></span></span><span class="b-valor">67%, hasta 20</span></div>
+        <div class="barra"><span class="b-nombre">Salsas</span><span class="b-pista"><span style="width:57.1%"></span></span><span class="b-valor">57%, hasta 17</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="recuadro">Entran los de mejor score, sin pasar el tope de su categoría y con un máximo de 30. Así no se llena el carrusel con una sola categoría.</div>
+  <footer class="pie"><span class="numero">4 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Ejemplo de la corrida de mayo 2026</span></footer>
+</section>
+<section class="slide aumentar" aria-label="Aumentar, paso 3">
+  <header class="cabecera"><span class="seccion">Palanca Aumentar: Imperdonables<span class="paso">Paso 3 de 4</span></span><span class="etiqueta">Web Aliados</span></header>
+  <h1>¿En qué orden se muestran?</h1>
+  <p class="bajada">El score decide quién entra. El orden lo decide la prioridad: <b>rotación × urgencia</b>.</p>
+  <div class="cuerpo">
+    <div class="columna">
+      <dl class="definiciones">
+        <div><dt>Rotación</dt><dd>Cuántas veces compró el SKU en los últimos 12 meses.</dd></div>
+        <div><dt>Atraso</dt><dd>Días sin comprarlo ÷ su ciclo. 1 quiere decir que le toca hoy.</dd></div>
+        <div><dt>Urgencia</dt><dd>Sube hasta que le toca y después baja: si se saltó varios ciclos, probablemente ya lo compra en otro lado.</dd></div>
+      </dl>
+      <table class="casos">
+        <thead><tr><th>Caso</th><th>Rotación</th><th>Atraso</th><th>Prioridad</th></tr></thead>
+        <tbody>
+          <tr class="gana"><td>Alta rotación, un poco atrasado</td><td>12</td><td>1.5</td><td>10.9</td></tr>
+          <tr><td>Baja rotación, al día</td><td>3</td><td>1.0</td><td>3.0</td></tr>
+          <tr><td>Alta rotación, muy atrasado</td><td>12</td><td>4.0</td><td>2.4</td></tr>
+          <tr><td>Baja rotación, muy atrasado</td><td>3</td><td>4.0</td><td>0.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figure class="figura"><svg viewBox="0 0 560 330" width="560" height="330" role="img" aria-label="Curva de urgencia según el atraso">
+<rect x="346.4" y="24" width="193.6" height="250" fill="#EFEBE3"/>
+<text x="443.2" y="44" font-size="13" fill="#6E6A63" text-anchor="middle">probablemente ya</text>
+<text x="443.2" y="61" font-size="13" fill="#6E6A63" text-anchor="middle">lo compra en otro lado</text>
+<line x1="56" y1="274" x2="540" y2="274" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="56" y1="24" x2="56" y2="274" stroke="#D9D2C4" stroke-width="2"/>
+<text x="56.0" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">0</text>
+<text x="152.8" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">1</text>
+<text x="249.6" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">2</text>
+<text x="346.4" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">3</text>
+<text x="443.2" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">4</text>
+<text x="540.0" y="296" font-size="13" fill="#6E6A63" text-anchor="middle">5</text>
+<text x="298.0" y="318" font-size="14" fill="#3D3A36" text-anchor="middle">atraso, en ciclos (1 = le toca hoy)</text>
+<text x="18" y="149.0" font-size="14" fill="#3D3A36" text-anchor="middle" transform="rotate(-90 18 149.0)">urgencia</text>
+<polyline points="56.0,274.0 59.9,264.9 63.7,255.8 67.6,246.7 71.5,237.6 75.4,228.5 79.2,219.5 83.1,210.4 87.0,201.3 90.8,192.2 94.7,183.1 98.6,174.0 102.5,164.9 106.3,155.8 110.2,146.7 114.1,137.6 118.0,128.5 121.8,119.5 125.7,110.4 129.6,101.3 133.4,92.2 137.3,83.1 141.2,74.0 145.1,64.9 148.9,55.8 152.8,46.7 156.7,46.9 160.5,47.4 164.4,48.2 168.3,49.3 172.2,50.7 176.0,52.3 179.9,54.1 183.8,56.2 187.6,58.4 191.5,60.7 195.4,63.2 199.3,65.9 203.1,68.6 207.0,71.5 210.9,74.4 214.8,77.5 218.6,80.6 222.5,83.7 226.4,86.9 230.2,90.2 234.1,93.5 238.0,96.8 241.9,100.1 245.7,103.4 249.6,106.8 253.5,110.1 257.3,113.5 261.2,116.8 265.1,120.1 269.0,123.4 272.8,126.7 276.7,129.9 280.6,133.1 284.4,136.3 288.3,139.5 292.2,142.6 296.1,145.7 299.9,148.7 303.8,151.7 307.7,154.7 311.6,157.6 315.4,160.5 319.3,163.3 323.2,166.1 327.0,168.8 330.9,171.5 334.8,174.1 338.7,176.7 342.5,179.2 346.4,181.7 350.3,184.2 354.1,186.5 358.0,188.9 361.9,191.2 365.8,193.4 369.6,195.6 373.5,197.8 377.4,199.8 381.2,201.9 385.1,203.9 389.0,205.9 392.9,207.8 396.7,209.6 400.6,211.5 404.5,213.2 408.4,215.0 412.2,216.7 416.1,218.3 420.0,219.9 423.8,221.5 427.7,223.0 431.6,224.5 435.5,225.9 439.3,227.4 443.2,228.7 447.1,230.1 450.9,231.4 454.8,232.7 458.7,233.9 462.6,235.1 466.4,236.3 470.3,237.4 474.2,238.5 478.0,239.6 481.9,240.6 485.8,241.6 489.7,242.6 493.5,243.6 497.4,244.5 501.3,245.4 505.2,246.3 509.0,247.2 512.9,248.0 516.8,248.8 520.6,249.6 524.5,250.4 528.4,251.1 532.3,251.8 536.1,252.5 540.0,253.2" fill="none" stroke="#2D9C9C" stroke-width="4" stroke-linejoin="round"/>
+<circle cx="152.8" cy="46.7" r="7" fill="#fff" stroke="#1E7272" stroke-width="3"/>
+<text x="152.8" y="30.7" font-size="14" font-weight="bold" fill="#1E7272" text-anchor="middle">le toca: 1.00</text>
+<circle cx="201.2" cy="67.2" r="7" fill="#fff" stroke="#1E7272" stroke-width="3"/>
+<text x="213.2" y="63.2" font-size="14" font-weight="bold" fill="#1E7272" text-anchor="start">1.5 ciclos: 0.91</text>
+<circle cx="443.2" cy="228.7" r="7" fill="#fff" stroke="#1E7272" stroke-width="3"/>
+<text x="443.2" y="256.7" font-size="14" font-weight="bold" fill="#1E7272" text-anchor="middle">4 ciclos: 0.20</text>
+</svg></figure>
+  </div>
+  <div class="recuadro">Un SKU de alta rotación un poco atrasado le gana a uno de baja rotación muy atrasado.</div>
+  <footer class="pie"><span class="numero">5 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+<section class="slide aumentar" aria-label="Aumentar, paso 4">
+  <header class="cabecera"><span class="seccion">Palanca Aumentar: Imperdonables<span class="paso">Paso 4 de 4</span></span><span class="etiqueta">Web Aliados</span></header>
+  <h1>Siempre 30, y solo productos core</h1>
+  <p class="bajada">Si con la ventana no llega a 30, el carrusel se completa en este orden. Cada bloque se ordena por la misma prioridad.</p>
+  <div class="cuerpo columna-unica">
+    <ol class="bloques">
+      <li><span class="chip" style="background:#2D9C9C"></span><div><b>En ventana.</b> Lo que le toca reponer (pasos 1 a 3).</div></li>
+      <li><span class="chip" style="background:#7DC2C0"></span><div><b>Dejó de comprar.</b> Lo compró en los 6 meses previos y no en el último mes cerrado.</div></li>
+      <li><span class="chip" style="background:#B7DEDC"></span><div><b>Ya lo compra.</b> El resto de lo que compró en el año.</div></li>
+      <li><span class="chip" style="background:#C99A3E"></span><div><b>Su segmento.</b> Lo que más compran los clientes de su segmento y él no; si no alcanza, lo de todo MA. Nunca algo de su carrusel de Infaltables.</div></li>
+    </ol>
+    <div class="tira-bloque">
+      <div class="tira-titulo">Así quedaron, en promedio, los 30 de cada cliente en la primera corrida</div>
+      <svg viewBox="0 0 986 29" width="986" height="29" role="img" aria-label="30 casillas: 8 en ventana, 14 dejó de comprar, 4 ya lo compra, 4 de su segmento">
+<rect x="0" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="33" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="66" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="99" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="132" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="165" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="198" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="231" y="0" width="29" height="29" rx="5" fill="#2D9C9C"/>
+<rect x="264" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="297" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="330" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="363" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="396" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="429" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="462" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="495" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="528" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="561" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="594" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="627" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="660" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="693" y="0" width="29" height="29" rx="5" fill="#7DC2C0"/>
+<rect x="726" y="0" width="29" height="29" rx="5" fill="#B7DEDC"/>
+<rect x="759" y="0" width="29" height="29" rx="5" fill="#B7DEDC"/>
+<rect x="792" y="0" width="29" height="29" rx="5" fill="#B7DEDC"/>
+<rect x="825" y="0" width="29" height="29" rx="5" fill="#B7DEDC"/>
+<rect x="858" y="0" width="29" height="29" rx="5" fill="#C99A3E"/>
+<rect x="891" y="0" width="29" height="29" rx="5" fill="#C99A3E"/>
+<rect x="924" y="0" width="29" height="29" rx="5" fill="#C99A3E"/>
+<rect x="957" y="0" width="29" height="29" rx="5" fill="#C99A3E"/>
+</svg>
+      <div class="tira-leyenda"><span><b>8</b> en ventana</span><span><b>14</b> dejó de comprar</span><span><b>4</b> ya lo compra</span><span><b>4</b> de su segmento</span></div>
+    </div>
+  </div>
+  <div class="recuadro">Lo que no entra en los 30 queda de reserva. Si el cliente compra en el mes algo de su carrusel, ese producto baja al final y sube el siguiente.</div>
+  <footer class="pie"><span class="numero">6 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Primera corrida, 5 de octubre de 2026: 6,930 productos en 231 clientes</span></footer>
+</section>
+<section class="slide nuevo" aria-label="Nuevo, qué recomendamos">
+  <header class="cabecera"><span class="seccion">Palanca Nuevo: Infaltables</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>¿Qué le recomendamos?</h1>
+  <p class="bajada">Productos que compran los clientes de su mismo segmento y él no compró en los últimos 12 meses. Cada uno recibe un score de 0 a 100.</p>
+  <div class="cuerpo columna-unica">
+    <div class="formula grande-nuevo">40% co-ocurrencia + 30% popularidad en su segmento + 20% popularidad general + 10% novedad</div>
+    <div class="cuatro">
+      <div class="tarjeta"><h3>Co-ocurrencia</h3><p>Se compra junto con lo que él ya compra, entre clientes de su segmento.</p></div>
+      <div class="tarjeta"><h3>Popularidad en su segmento</h3><p>Qué tanto lo compran los clientes parecidos a él.</p></div>
+      <div class="tarjeta"><h3>Popularidad general</h3><p>Qué tanto se vende en todo el canal.</p></div>
+      <div class="tarjeta"><h3>Novedad</h3><p>Un empujón chico a lo menos masivo, para que no salgan siempre los mismos.</p></div>
+    </div>
+    <p class="segmentos">Segmentos: Food-Impulso (FI), Home-Care (HC), Mayoristas en Crecimiento (MC) y Power Buyer (PB).</p>
+  </div>
+  <div class="recuadro">Lo que más pesa es la co-ocurrencia: primero se recomienda lo que suele acompañar a lo que ya compra.</div>
+  <footer class="pie"><span class="numero">7 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+<section class="slide nuevo" aria-label="Nuevo, cuántos y en qué orden">
+  <header class="cabecera"><span class="seccion">Palanca Nuevo: Infaltables</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>¿Cuántos, de qué categorías y en qué orden?</h1>
+  <div class="cuerpo dos">
+    <div class="tarjeta">
+      <h2>Cuántos le da el modelo</h2>
+      <p class="nota-tarjeta">El promedio de SKUs que compra su segmento, con tope de 60.</p>
+      <div class="cifras">
+        <div><span class="cifra">60</span><span>Home-Care</span></div>
+        <div><span class="cifra">60</span><span>Power Buyer</span></div>
+        <div><span class="cifra">58</span><span>Food-Impulso</span></div>
+        <div><span class="cifra alerta">21</span><span>Mayoristas en Crecimiento</span></div>
+      </div>
+      <p class="nota-tarjeta">Corrida de agosto 2026.</p>
+    </div>
+    <ul class="reglas">
+      <li><b>Mezcla.</b> Respeta cuánto pesan core y value, y cada categoría, en su segmento.</li>
+      <li><b>Temporada.</b> Las categorías fuera de temporada no entran: Panetones solo de octubre a diciembre, igual que en Imperdonables.</li>
+      <li><b>Especializados.</b> Clientes Home-Care o Food-Impulso que compran 4 categorías o menos al mes reciben solo de sus categorías.</li>
+      <li><b>Orden.</b> Primero las 7 categorías priorizadas (Aceites, Detergentes, Galletas, Insecticidas, Shampoo, Pastas y Salsas), después el resto, siempre por score.</li>
+      <li><b>En el carrusel.</b> Va primero la mitad mejor de cada categoría y después el resto.</li>
+    </ul>
+  </div>
+  <div class="recuadro">Como va primero la mitad mejor de cada categoría, los 30 visibles cubren todas sus categorías y no solo la más fuerte.</div>
+  <footer class="pie"><span class="numero">8 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+<section class="slide nuevo" aria-label="Nuevo, siempre 30">
+  <header class="cabecera"><span class="seccion">Palanca Nuevo: Infaltables</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>Siempre 30, con su reserva</h1>
+  <p class="bajada">Se calcula una vez al mes, con hasta 60 productos por cliente: los 30 que ve y 30 de reserva. Los lunes solo se reordena.</p>
+  <div class="cuerpo columna-unica">
+    <ol class="bloques">
+      <li><span class="chip" style="background:#E85D4C"></span><div><b>La lista del modelo.</b> Lo que explican las dos láminas anteriores.</div></li>
+      <li><span class="chip" style="background:#F2ABA2"></span><div><b>Sus siguientes candidatos.</b> Los que siguen en el mismo score.</div></li>
+      <li><span class="chip" style="background:#F2ABA2"></span><div><b>Lo más vendido que todavía no compra.</b> A un especializado, primero lo de sus categorías.</div></li>
+    </ol>
+    <div class="tira-bloque">
+      <div class="tira-titulo">En la primera corrida, de cada 30 productos visibles:</div>
+      <svg viewBox="0 0 986 29" width="986" height="29" role="img" aria-label="30 casillas: 29 del modelo y 1 de relleno">
+<rect x="0" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="33" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="66" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="99" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="132" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="165" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="198" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="231" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="264" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="297" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="330" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="363" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="396" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="429" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="462" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="495" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="528" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="561" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="594" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="627" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="660" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="693" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="726" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="759" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="792" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="825" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="858" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="891" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="924" y="0" width="29" height="29" rx="5" fill="#E85D4C"/>
+<rect x="957" y="0" width="29" height="29" rx="5" fill="#F2ABA2"/>
+</svg>
+      <div class="tira-leyenda"><span><b>97%</b> del modelo</span><span><b>2%</b> de sus siguientes candidatos</span><span><b>1%</b> de lo más vendido</span></div>
+    </div>
+  </div>
+  <div class="recuadro">Cuando el cliente empieza a comprar un SKU de este carrusel, sale de Infaltables y pasa a Imperdonables. En la primera corrida pasó con 233 productos.</div>
+  <footer class="pie"><span class="numero">9 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Primera corrida, 5 de octubre de 2026</span></footer>
+</section>
+<section class="slide general" aria-label="Cómo conviven en el mes">
+  <header class="cabecera"><span class="seccion">Las dos palancas</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>Cómo conviven en el mes</h1>
+  <div class="cuerpo columna-unica">
+    <figure class="figura mes"><svg viewBox="0 0 1150 150" width="1150" height="150" role="img" aria-label="Corridas de octubre 2026">
+<line x1="20" y1="70" x2="1130" y2="70" stroke="#D9D2C4" stroke-width="3"/>
+<line x1="20.0" y1="65" x2="20.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="57.0" y1="65" x2="57.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="94.0" y1="65" x2="94.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="131.0" y1="65" x2="131.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="168.0" y1="65" x2="168.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="205.0" y1="65" x2="205.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="242.0" y1="65" x2="242.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="279.0" y1="65" x2="279.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="316.0" y1="65" x2="316.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="353.0" y1="65" x2="353.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="390.0" y1="65" x2="390.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="427.0" y1="65" x2="427.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="464.0" y1="65" x2="464.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="501.0" y1="65" x2="501.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="538.0" y1="65" x2="538.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="575.0" y1="65" x2="575.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="612.0" y1="65" x2="612.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="649.0" y1="65" x2="649.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="686.0" y1="65" x2="686.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="723.0" y1="65" x2="723.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="760.0" y1="65" x2="760.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="797.0" y1="65" x2="797.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="834.0" y1="65" x2="834.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="871.0" y1="65" x2="871.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="908.0" y1="65" x2="908.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="945.0" y1="65" x2="945.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="982.0" y1="65" x2="982.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="1019.0" y1="65" x2="1019.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="1056.0" y1="65" x2="1056.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="1093.0" y1="65" x2="1093.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<line x1="1130.0" y1="65" x2="1130.0" y2="75" stroke="#D9D2C4" stroke-width="2"/>
+<circle cx="20.0" cy="70" r="17" fill="#1A1A2E"/>
+<text x="20.0" y="75" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">1</text>
+<text x="20.0" y="114" font-size="15" font-weight="bold" fill="#1A1A2E" text-anchor="start">Mensual</text>
+<text x="20.0" y="134" font-size="13" fill="#6E6A63" text-anchor="start">primer día hábil</text>
+<circle cx="168.0" cy="70" r="17" fill="#2D9C9C"/>
+<text x="168.0" y="75" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">5</text>
+<text x="168.0" y="114" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">lunes</text>
+<circle cx="427.0" cy="70" r="17" fill="#2D9C9C"/>
+<text x="427.0" y="75" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">12</text>
+<text x="427.0" y="114" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">lunes</text>
+<circle cx="686.0" cy="70" r="17" fill="#2D9C9C"/>
+<text x="686.0" y="75" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">19</text>
+<text x="686.0" y="114" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">lunes</text>
+<circle cx="945.0" cy="70" r="17" fill="#2D9C9C"/>
+<text x="945.0" y="75" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">26</text>
+<text x="945.0" y="114" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">lunes</text>
+<text x="20.0" y="36" font-size="14" fill="#6E6A63">octubre 2026</text>
+</svg></figure>
+    <div class="dos-col">
+      <div class="tarjeta"><h3>Mensual, el primer día hábil</h3><p>Calcula la base de Infaltables del mes con su reserva, calcula Imperdonables y carga los dos carruseles.</p></div>
+      <div class="tarjeta"><h3>Cada lunes</h3><p>Recalcula Imperdonables con la fecha del día, reordena Infaltables, baja al final lo que el cliente ya compró en el mes y carga.</p></div>
+    </div>
+    <p class="comunes">En los dos carruseles: 30 productos exactos, prioridad de 1 a 30, ningún SKU repetido entre ellos y el mismo calendario de temporada.</p>
+  </div>
+  <div class="recuadro">Cada carga es una foto completa de los dos carruseles para todos los clientes, y la web muestra la última.</div>
+  <footer class="pie"><span class="numero">10 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+<section class="slide general cierre" aria-label="Cierre">
+  <header class="cabecera"><span class="seccion">Las dos palancas</span><span class="etiqueta">Web Aliados</span></header>
+  <h1>Un SKU pasa de una palanca a la otra</h1>
+  <p class="bajada">Nuevo lo pone frente al cliente; cuando lo adopta, Aumentar lo cuida.</p>
+  <div class="cuerpo columna-unica centrado">
+    <figure class="figura"><svg viewBox="0 0 1150 300" width="1150" height="300" role="img" aria-label="Recorrido de un SKU entre las dos palancas">
+<defs><marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1A1A2E"/></marker></defs>
+<rect x="2" y="30" width="246" height="118" rx="12" fill="#FBE6E2" stroke="#E85D4C" stroke-width="2.5"/>
+<text x="125.0" y="74" font-size="17" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Todavía no lo compra</text>
+<text x="125.0" y="102" font-size="15" fill="#3D3A36" text-anchor="middle">Infaltables se lo recomienda</text>
+<rect x="302" y="30" width="246" height="118" rx="12" fill="#FFFFFF" stroke="#D9D2C4" stroke-width="2.5"/>
+<text x="425.0" y="74" font-size="17" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Lo compra por primera vez</text>
+<text x="425.0" y="102" font-size="15" fill="#3D3A36" text-anchor="middle">sale de Infaltables</text>
+<rect x="602" y="30" width="246" height="118" rx="12" fill="#E2F1F0" stroke="#2D9C9C" stroke-width="2.5"/>
+<text x="725.0" y="74" font-size="17" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Lo compra seguido</text>
+<text x="725.0" y="102" font-size="15" fill="#3D3A36" text-anchor="middle">Imperdonables se lo ofrece</text>
+<text x="725.0" y="122" font-size="15" fill="#3D3A36" text-anchor="middle">cuando le toca reponer</text>
+<rect x="902" y="30" width="246" height="118" rx="12" fill="#E2F1F0" stroke="#2D9C9C" stroke-width="2.5"/>
+<text x="1025.0" y="74" font-size="17" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Deja de comprarlo</text>
+<text x="1025.0" y="102" font-size="15" fill="#3D3A36" text-anchor="middle">Imperdonables lo vuelve a ofrecer</text>
+<text x="1025.0" y="122" font-size="15" fill="#3D3A36" text-anchor="middle">(bloque "dejó de comprar")</text>
+<line x1="254" y1="89.0" x2="296" y2="89.0" stroke="#1A1A2E" stroke-width="2.5" marker-end="url(#flecha)"/>
+<line x1="554" y1="89.0" x2="596" y2="89.0" stroke="#1A1A2E" stroke-width="2.5" marker-end="url(#flecha)"/>
+<line x1="854" y1="89.0" x2="896" y2="89.0" stroke="#1A1A2E" stroke-width="2.5" marker-end="url(#flecha)"/>
+<path d="M 1025.0 152 C 1025.0 238, 725.0 238, 725.0 156" fill="none" stroke="#1E7272" stroke-width="2.5" marker-end="url(#flecha)"/>
+<text x="875.0" y="240" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">si vuelve a comprarlo</text>
+<text x="125.0" y="188" font-size="15" font-weight="bold" fill="#B5392A" text-anchor="middle">palanca Nuevo</text>
+<text x="875.0" y="20" font-size="15" font-weight="bold" fill="#1E7272" text-anchor="middle">palanca Aumentar</text>
+</svg></figure>
+  </div>
+  <div class="recuadro">Nuevo amplía lo que compra cada cliente. Aumentar hace que lo siga comprando, y más seguido.</div>
+  <footer class="pie"><span class="numero">11 / 11</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente"></span></footer>
+</section>
+</main>
+<nav class="controles" aria-label="Navegación">
+  <button id="anterior" type="button" aria-label="Lámina anterior">‹</button>
+  <button id="siguiente" type="button" aria-label="Lámina siguiente">›</button>
+</nav>
+<script>
+(function(){
+  var esc = document.querySelector('.escenario');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var prev = document.getElementById('anterior'), next = document.getElementById('siguiente');
+  var i = 0;
+  function ajustar(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    esc.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  function ir(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(el, k){ el.classList.toggle('activa', k === i); el.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
+    prev.disabled = i === 0; next.disabled = i === slides.length - 1;
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  document.addEventListener('keydown', function(e){
+    if (['ArrowRight','PageDown',' ','Enter'].indexOf(e.key) >= 0){ e.preventDefault(); ir(i + 1); }
+    else if (['ArrowLeft','PageUp','Backspace'].indexOf(e.key) >= 0){ e.preventDefault(); ir(i - 1); }
+    else if (e.key === 'Home'){ ir(0); } else if (e.key === 'End'){ ir(slides.length - 1); }
+  });
+  prev.addEventListener('click', function(){ ir(i - 1); });
+  next.addEventListener('click', function(){ ir(i + 1); });
+  window.addEventListener('resize', ajustar);
+  window.addEventListener('hashchange', function(){ var n = parseInt(location.hash.slice(1), 10); if (!isNaN(n) && n - 1 !== i) ir(n - 1); });
+  var h = parseInt((location.hash || '#1').slice(1), 10);
+  ajustar(); ir(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>
