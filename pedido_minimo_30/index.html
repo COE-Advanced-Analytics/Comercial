@@ -1,0 +1,205 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Pedido mínimo S/30 · DEX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--teal:#1F6F6F;--teal-bg:#E8F6F6;--navy:#1A1A2E;--gray:#5A6560;--glt:#8A938E;
+ --red:#E85D4C;--red-bg:#FEF0EE;--gold:#D4A853;--goldt:#B8862F;--gold-bg:#FDF8EC;
+ --green:#047857;--green-bg:#ECFDF5;--line:#E4E7E5;--chip:#D9D4CA;--pagebg:#EBECE9}
+html,body{background:var(--pagebg);font-family:Arial,Helvetica,sans-serif;color:var(--navy);-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.slide{position:absolute;width:1280px;height:720px;background:#fff;overflow:hidden;
+ transform-origin:center center;box-shadow:0 10px 40px rgba(0,0,0,.18);display:none;padding:52px 58px 0}
+.slide.on{display:block}
+.eyebrow{position:absolute;top:40px;left:58px;font-size:12.5px;font-weight:bold;color:var(--teal);letter-spacing:1.4px}
+.chip{position:absolute;top:34px;right:58px;background:var(--teal-bg);color:var(--teal);
+ font-size:11px;font-weight:bold;letter-spacing:.8px;padding:9px 16px;border-radius:7px}
+.h1{position:absolute;top:70px;left:58px;right:58px;font-size:31px;font-weight:bold;color:var(--navy);line-height:1.14}
+.sub{position:absolute;left:58px;right:58px;font-size:14px;color:var(--gray);line-height:1.5}
+.num{font-size:44px;font-weight:bold;line-height:1;letter-spacing:-.5px}
+.slab{font-size:10.5px;font-weight:bold;color:var(--glt);letter-spacing:.8px;margin-top:7px}
+.sdesc{font-size:12.5px;color:var(--gray);margin-top:6px;line-height:1.4}
+.card{border-radius:11px;padding:18px 20px}
+.card .ct{font-size:15px;font-weight:bold;color:var(--navy);margin-bottom:8px}
+.card .cb{font-size:13px;color:var(--gray);line-height:1.5}
+.card .cb b{color:var(--navy)}
+.bg-teal{background:var(--teal-bg)}.bg-red{background:var(--red-bg)}.bg-gold{background:var(--gold-bg)}
+.bg-green{background:var(--green-bg)}.bg-white{background:#fff;border:1px solid var(--line)}
+.callout{position:absolute;left:58px;right:58px;border-radius:9px;padding:14px 150px 14px 26px;
+ font-size:13.5px;font-weight:bold;line-height:1.4;overflow:hidden}
+.callout::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.c-idea{background:var(--gold-bg);color:var(--goldt)}.c-idea::before{background:var(--gold)}
+.c-ask{background:var(--green-bg);color:var(--green)}.c-ask::before{background:var(--green)}
+.c-read{background:var(--teal-bg);color:var(--teal)}.c-read::before{background:var(--teal)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{background:var(--teal-bg);color:var(--navy);font-weight:bold;text-align:right;padding:7px 10px;border-bottom:2px solid #fff}
+th:first-child,td:first-child{text-align:left}
+td{padding:6px 10px;color:var(--gray);border-bottom:1px solid var(--line)}
+td.best{font-weight:bold;color:var(--teal)}td.bad{font-weight:bold;color:var(--red)}
+.step{display:flex;gap:13px;align-items:flex-start;margin-bottom:15px}
+.sn{width:32px;height:32px;flex:none;background:var(--teal);color:#fff;border-radius:7px;font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.stt{font-size:14.5px;font-weight:bold;color:var(--navy)}.stb{font-size:12.5px;color:var(--gray);line-height:1.4;margin-top:2px}
+.btn{display:inline-block;background:var(--teal);color:#fff;border:none;font-size:12.5px;font-weight:bold;padding:10px 18px;border-radius:8px;cursor:pointer}
+.btn:hover{background:#17595a}
+.modal{position:absolute;inset:0;background:rgba(26,26,46,.55);display:none;align-items:center;justify-content:center;z-index:30}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:14px;padding:24px 28px;width:660px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.mclose{float:right;cursor:pointer;color:var(--glt);font-size:20px;font-weight:bold;border:none;background:none;line-height:1}
+.foot{position:absolute;font-size:11px;color:var(--glt)}
+#nav{position:fixed;bottom:16px;right:20px;display:flex;align-items:center;gap:12px;z-index:50;
+ background:rgba(255,255,255,.92);padding:7px 13px;border-radius:30px;box-shadow:0 3px 14px rgba(0,0,0,.14)}
+#nav button{border:none;background:var(--teal);color:#fff;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer}
+#nav button:disabled{background:var(--chip);cursor:default}
+#counter{font-size:12.5px;color:var(--gray);font-weight:bold;min-width:42px;text-align:center}
+#hint{position:fixed;bottom:18px;left:20px;font-size:11px;color:var(--glt);z-index:50}
+@media print{#nav,#hint,.btn{display:none}html,body{background:#fff}#stage{position:static;overflow:visible}
+ .slide{display:block !important;position:relative;transform:none !important;page-break-after:always;box-shadow:none;margin:0 auto}.modal{display:none !important}}
+</style></head><body>
+<div id="stage"><section class="slide "><div class="eyebrow">ANÁLISIS DE IMPACTO</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1" style="top:128px;font-size:39px">Pedido mínimo de S/30 en DEX:<br>qué pasó cuando entró</div>
+<div class="sub" style="top:256px">Se lanzó un monto mínimo de S/30 por pedido a nivel nacional, en CMP y B2B (AS), <b>escalonado por modalidad de autoventa</b>. Esta es la foto con la base real, 2026-08-01 al 2026-10-09 (octubre en avance).</div>
+<div style="position:absolute;top:338px;left:58px;right:58px;display:flex;gap:24px">
+ <div style="flex:1"><div class="num" style="color:var(--teal)">1 565 620</div><div class="slab">PEDIDOS ANALIZADOS</div><div class="sdesc">S/610 MM · 207 574 clientes · 25 DEX</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--teal)">2 olas</div><div class="slab">ARRANQUE ESCALONADO</div><div class="sdesc">Día a Día 1-set · Insuma 1-oct</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--red)">7.9%→1.9%</div><div class="slab">PEDIDOS BAJO S/30 · DÍA A DÍA</div><div class="sdesc">de agosto a setiembre, de un día al otro</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--green)">−0.2%</div><div class="slab">VENTA TOTAL AGO → SET</div><div class="sdesc">el piso no tumbó la venta</div></div>
+</div>
+<div class="callout c-idea" style="top:540px">En una línea: el piso sacó los pedidos muy chicos (de 7.9% a 1.9% en Día a Día) sin costar venta — lo que estaba bajo S/30 pesaba menos del 1% de la venta, y el mes quedó plano.</div>
+</section><section class="slide "><div class="eyebrow">CONTEXTO · LAS FECHAS</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">Qué se lanzó y cuándo</div>
+<div class="sub" style="top:122px">Un monto mínimo de S/30 por pedido, nacional, en CMP y B2B (AS). No entró de golpe: fue por olas, una modalidad de autoventa a la vez.</div>
+<div style="position:absolute;top:176px;left:58px;width:638px;display:flex;flex-direction:column;gap:38px">
+ <div class="step" style="margin:0"><div class="sn" style="width:38px;height:38px;font-size:17px">1</div><div><div class="stt" style="font-size:16px">1-set · arranca Día a Día (A)</div><div class="stb" style="font-size:13.5px">La modalidad más grande en pedidos (46% del total). El piso se nota al toque: los pedidos bajo S/30 pasan de 7.9% a 1.9% de un día al otro.</div></div></div>
+ <div class="step" style="margin:0"><div class="sn" style="width:38px;height:38px;font-size:17px">2</div><div><div class="stt" style="font-size:16px">1-oct · arranca Insuma (B)</div><div class="stb" style="font-size:13.5px">La segunda ola. Insuma tenía menos pedido chico de entrada (3–5%), así que el corte es más suave y todavía está en avance (datos al 9-oct).</div></div></div>
+ <div class="step" style="margin:0"><div class="sn" style="width:38px;height:38px;font-size:17px">3</div><div><div class="stt" style="font-size:16px">En ambos canales, CMP y AS</div><div class="stb" style="font-size:13.5px">El escalón es por modalidad, no por canal: CMP y AS cortan en la misma fecha de su modalidad. Lo confirmamos en la siguiente lámina.</div></div></div>
+ <div class="step" style="margin:0"><div class="sn" style="width:38px;height:38px;font-size:17px">4</div><div><div class="stt" style="font-size:16px">Nitro y Odoo quedan sin piso</div><div class="stb" style="font-size:13.5px">Nitro (59% de la venta) sigue con ~23% de pedidos bajo S/30 todo el periodo: por eso sirve de grupo de control.</div></div></div>
+</div>
+<div class="card bg-white" style="position:absolute;top:172px;right:58px;width:400px;height:168px">
+ <div class="ct">Qué se lanzó</div>
+ <div class="cb" style="font-size:14px">Monto <b>mínimo de S/30 por pedido</b>, a nivel nacional, en CMP y B2B (AS).<br><br>El piso toca hoy <b>~40% de la venta</b> (Día a Día + Insuma); Nitro y Odoo quedan afuera.</div></div>
+<div class="card bg-teal" style="position:absolute;top:356px;right:58px;width:400px;height:242px">
+ <div class="ct">Cómo leer el resto del análisis</div>
+ <div class="cb" style="font-size:14px"><b>Modalidad:</b> la fuerza de autoventa — Día a Día (A), Insuma (B), Nitro (N), Odoo.<br><br>
+ <b>Control:</b> Nitro no tiene piso; si algo cambió por el piso y no por estacionalidad, se ve en A/B y no en Nitro.<br><br>
+ <b>Octubre*:</b> mes en avance, datos al 9-oct.</div></div>
+<div class="callout c-idea" style="bottom:26px">La idea: mismo piso para todos, pero prendido por olas — primero Día a Día en setiembre, Insuma en octubre; Nitro y Odoo, pendientes.</div>
+</section><section class="slide "><div class="eyebrow">EL CORTE</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">El corte se ve de un día al otro</div>
+<div class="sub" style="top:126px"><b>% de pedidos bajo S/30, por día.</b> Cada modalidad cae justo en su fecha; Nitro, sin piso, se queda arriba — prueba de que el quiebre lo hizo el piso, no la temporada.</div>
+<div style="position:absolute;top:166px;left:118px;right:118px"><svg viewBox="0 0 1060 440" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif"><line x1="52" y1="394.0" x2="1036" y2="394.0" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="398.0" font-size="12" fill="#8A938E" text-anchor="end">0%</text><line x1="52" y1="337.3" x2="1036" y2="337.3" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="341.3" font-size="12" fill="#8A938E" text-anchor="end">5%</text><line x1="52" y1="280.7" x2="1036" y2="280.7" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="284.7" font-size="12" fill="#8A938E" text-anchor="end">10%</text><line x1="52" y1="224.0" x2="1036" y2="224.0" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="228.0" font-size="12" fill="#8A938E" text-anchor="end">15%</text><line x1="52" y1="167.3" x2="1036" y2="167.3" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="171.3" font-size="12" fill="#8A938E" text-anchor="end">20%</text><line x1="52" y1="110.7" x2="1036" y2="110.7" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="114.7" font-size="12" fill="#8A938E" text-anchor="end">25%</text><line x1="52" y1="54.0" x2="1036" y2="54.0" stroke="#E4E7E5" stroke-width="1"/><text x="44" y="58.0" font-size="12" fill="#8A938E" text-anchor="end">30%</text><text x="52.0" y="416" font-size="12" fill="#8A938E" text-anchor="middle">1 Ago</text><text x="251.7" y="416" font-size="12" fill="#8A938E" text-anchor="middle">15 Ago</text><text x="494.1" y="416" font-size="12" fill="#8A938E" text-anchor="middle">1 Set</text><text x="693.7" y="416" font-size="12" fill="#8A938E" text-anchor="middle">15 Set</text><text x="921.9" y="416" font-size="12" fill="#8A938E" text-anchor="middle">1 Oct</text><text x="1036.0" y="416" font-size="12" fill="#8A938E" text-anchor="middle">9 Oct</text><line x1="494.1" y1="54" x2="494.1" y2="394" stroke="#1F6F6F" stroke-width="1.6" stroke-dasharray="5 4"/><text x="500.1" y="67" font-size="11.5" font-weight="bold" fill="#1F6F6F">Piso Día a Día</text><line x1="921.9" y1="54" x2="921.9" y2="394" stroke="#D4A853" stroke-width="1.6" stroke-dasharray="5 4"/><text x="927.9" y="67" font-size="11.5" font-weight="bold" fill="#D4A853">Piso Insuma</text><polyline points="52.0,165.2 80.5,164.2 94.8,162.9 109.0,159.1 123.3,120.3 137.6,128.2 151.8,144.4 180.3,127.2 194.6,122.0 208.9,134.1 223.1,120.3 237.4,110.9 251.7,120.1 280.2,131.7 294.4,110.1 308.7,117.2 323.0,95.5 337.2,94.2 351.5,110.3 380.0,105.7 394.3,79.8 408.5,80.1 422.8,74.6 437.0,60.3 451.3,91.9 479.8,68.7 494.1,146.4 508.3,156.9 522.6,133.4 536.9,125.6 551.1,141.0 579.7,133.9 593.9,130.7 608.2,125.2 622.4,121.7 636.7,162.9 651.0,154.3 665.2,394.0 679.5,131.0 693.7,148.6 708.0,160.3 722.3,140.1 736.5,137.8 750.8,150.1 779.3,143.6 793.6,140.7 807.8,145.5 822.1,111.5 836.3,113.8 850.6,117.4 864.9,252.3 879.1,114.3 893.4,111.8 907.7,76.0 921.9,150.6 936.2,137.3 950.4,142.6 979.0,138.3 993.2,139.8 1007.5,150.2 1021.7,142.9" fill="none" stroke="#8A938E" stroke-width="2.4" stroke-dasharray="6 4"/><polyline points="52.0,361.8 80.5,359.8 94.8,369.7 109.0,363.7 123.3,352.2 137.6,358.9 151.8,357.7 180.3,350.7 194.6,360.0 208.9,350.6 223.1,342.9 237.4,350.0 251.7,345.3 280.2,349.7 294.4,343.3 308.7,354.1 323.0,346.7 337.2,345.8 351.5,341.4 380.0,341.8 394.3,344.5 408.5,341.5 422.8,341.4 437.0,353.0 451.3,352.0 479.8,342.5 494.1,366.0 508.3,361.0 522.6,347.0 536.9,359.5 551.1,362.6 579.7,359.2 593.9,352.0 608.2,348.0 622.4,356.8 636.7,363.3 651.0,348.1 665.2,394.0 679.5,353.2 693.7,358.6 708.0,345.4 722.3,339.1 736.5,350.9 750.8,348.7 779.3,348.1 793.6,340.6 807.8,350.3 822.1,333.4 836.3,347.2 850.6,325.5 879.1,294.3 893.4,333.4 907.7,315.2 921.9,349.7 936.2,358.9 950.4,350.6 979.0,356.5 993.2,354.1 1007.5,358.0 1021.7,357.5" fill="none" stroke="#D4A853" stroke-width="2.4"/><polyline points="52.0,312.3 80.5,304.2 94.8,309.3 109.0,305.9 123.3,285.0 137.6,293.8 151.8,313.0 180.3,303.2 194.6,294.8 208.9,311.4 223.1,304.7 237.4,296.5 251.7,301.4 280.2,298.2 294.4,294.8 308.7,302.5 323.0,296.6 337.2,297.4 351.5,307.3 380.0,298.7 394.3,293.6 408.5,355.6 422.8,314.0 437.0,311.2 451.3,317.6 479.8,300.7 494.1,364.8 508.3,368.4 522.6,371.4 536.9,368.0 551.1,373.5 579.7,374.7 593.9,372.1 608.2,372.7 622.4,373.0 636.7,371.4 651.0,372.4 665.2,394.0 679.5,376.3 693.7,373.0 708.0,377.2 722.3,372.7 736.5,373.6 750.8,373.0 779.3,377.2 793.6,374.1 807.8,372.8 822.1,372.0 836.3,372.8 850.6,369.1 864.9,323.2 879.1,373.4 893.4,374.1 907.7,368.6 921.9,378.0 936.2,374.3 950.4,377.7 979.0,373.9 993.2,373.9 1007.5,380.1 1021.7,375.4 1036.0,394.0" fill="none" stroke="#1F6F6F" stroke-width="2.4"/><line x1="58" y1="24" x2="84" y2="24" stroke="#1F6F6F" stroke-width="2.6"/><text x="90" y="28" font-size="12.5" fill="#1A1A2E">Día a Día (piso 1 Set)</text><line x1="286.4" y1="24" x2="312.4" y2="24" stroke="#D4A853" stroke-width="2.6"/><text x="318.4" y="28" font-size="12.5" fill="#1A1A2E">Insuma (piso 1 Oct)</text><line x1="493.2" y1="24" x2="519.2" y2="24" stroke="#8A938E" stroke-width="2.6" stroke-dasharray="6 4"/><text x="525.2" y="28" font-size="12.5" fill="#1A1A2E">Nitro · sin piso (control)</text></svg></div>
+<div class="callout c-read" style="bottom:26px">Por modalidad, no por canal: Día a Día cae el 1-set en CMP (7.9→1.8%) y AS (8.0→4.2%); Insuma espera a octubre en los dos. Si fuera por canal, AS habría cortado en setiembre —y no lo hizo.</div>
+</section><section class="slide "><div class="eyebrow">LA DISTRIBUCIÓN</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">La curva de ticket se corre a la derecha</div>
+<div class="sub" style="top:122px">Distribución de los pedidos de Día a Día por monto (escala log). Con el piso, el bulto bajo S/30 se vacía y la masa se mueve a tickets más altos.</div>
+<div style="position:absolute;top:158px;left:58px;width:700px"><svg viewBox="0 0 1000 360" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif"><rect x="46" y="42" width="313.5" height="278" fill="#FBEDEA"/><line x1="46" y1="320.0" x2="980" y2="320.0" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="324.0" font-size="11.5" fill="#8A938E" text-anchor="end">0%</text><line x1="46" y1="264.4" x2="980" y2="264.4" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="268.4" font-size="11.5" fill="#8A938E" text-anchor="end">2%</text><line x1="46" y1="208.8" x2="980" y2="208.8" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="212.8" font-size="11.5" fill="#8A938E" text-anchor="end">4%</text><line x1="46" y1="153.2" x2="980" y2="153.2" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="157.2" font-size="11.5" fill="#8A938E" text-anchor="end">6%</text><line x1="46" y1="97.6" x2="980" y2="97.6" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="101.6" font-size="11.5" fill="#8A938E" text-anchor="end">8%</text><line x1="46" y1="42.0" x2="980" y2="42.0" stroke="#E4E7E5" stroke-width="1"/><text x="39" y="46.0" font-size="11.5" fill="#8A938E" text-anchor="end">10%</text><text x="46.0" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/1</text><text x="258.3" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/10</text><text x="359.6" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/30</text><text x="470.5" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/100</text><text x="682.8" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/1k</text><text x="895.1" y="340" font-size="11.5" fill="#8A938E" text-anchor="middle">S/10k</text><line x1="359.5" y1="42" x2="359.5" y2="320" stroke="#E85D4C" stroke-width="1.6" stroke-dasharray="5 4"/><text x="353.5" y="55" font-size="11.5" font-weight="bold" fill="#E85D4C" text-anchor="end">Piso S/30</text><polygon points="46,320.0 56.6,316.9 77.8,319.2 99.1,318.8 120.3,319.2 141.5,317.7 162.8,319.2 184.0,316.5 205.2,315.9 226.4,313.6 247.7,306.1 268.9,300.6 290.1,292.7 311.3,284.3 332.6,275.6 353.8,235.1 375.0,202.2 396.2,180.3 417.5,142.1 438.7,118.3 459.9,92.1 481.2,63.2 502.4,75.0 523.6,94.1 544.8,101.9 566.1,140.1 587.3,172.5 608.5,195.6 629.8,227.0 651.0,257.6 672.2,274.3 693.4,291.6 714.7,301.4 735.9,310.9 757.1,314.8 778.3,317.1 799.6,318.4 820.8,319.2 842.0,319.6 863.2,319.7 884.5,319.8 905.7,320.0 926.9,320.0 948.2,320.0 969.4,320.0 980,320.0" fill="#E85D4C" opacity="0.10"/><polyline points="56.6,316.9 77.8,319.2 99.1,318.8 120.3,319.2 141.5,317.7 162.8,319.2 184.0,316.5 205.2,315.9 226.4,313.6 247.7,306.1 268.9,300.6 290.1,292.7 311.3,284.3 332.6,275.6 353.8,235.1 375.0,202.2 396.2,180.3 417.5,142.1 438.7,118.3 459.9,92.1 481.2,63.2 502.4,75.0 523.6,94.1 544.8,101.9 566.1,140.1 587.3,172.5 608.5,195.6 629.8,227.0 651.0,257.6 672.2,274.3 693.4,291.6 714.7,301.4 735.9,310.9 757.1,314.8 778.3,317.1 799.6,318.4 820.8,319.2 842.0,319.6 863.2,319.7 884.5,319.8 905.7,320.0 926.9,320.0 948.2,320.0 969.4,320.0" fill="none" stroke="#E85D4C" stroke-width="2.6"/><polygon points="46,320.0 56.6,319.5 77.8,319.9 99.1,319.9 120.3,319.8 141.5,319.7 162.8,319.9 184.0,319.0 205.2,318.7 226.4,318.6 247.7,316.3 268.9,316.2 290.1,312.8 311.3,311.3 332.6,309.9 353.8,244.2 375.0,155.3 396.2,159.3 417.5,133.0 438.7,111.6 459.9,84.8 481.2,58.7 502.4,72.1 523.6,92.6 544.8,104.0 566.1,140.4 587.3,173.9 608.5,178.4 629.8,219.1 651.0,251.9 672.2,271.6 693.4,289.5 714.7,300.2 735.9,309.7 757.1,314.6 778.3,317.0 799.6,318.6 820.8,319.1 842.0,319.6 863.2,319.7 884.5,319.9 905.7,319.9 926.9,320.0 948.2,320.0 969.4,320.0 980,320.0" fill="#1F6F6F" opacity="0.10"/><polyline points="56.6,319.5 77.8,319.9 99.1,319.9 120.3,319.8 141.5,319.7 162.8,319.9 184.0,319.0 205.2,318.7 226.4,318.6 247.7,316.3 268.9,316.2 290.1,312.8 311.3,311.3 332.6,309.9 353.8,244.2 375.0,155.3 396.2,159.3 417.5,133.0 438.7,111.6 459.9,84.8 481.2,58.7 502.4,72.1 523.6,92.6 544.8,104.0 566.1,140.4 587.3,173.9 608.5,178.4 629.8,219.1 651.0,251.9 672.2,271.6 693.4,289.5 714.7,300.2 735.9,309.7 757.1,314.6 778.3,317.0 799.6,318.6 820.8,319.1 842.0,319.6 863.2,319.7 884.5,319.9 905.7,319.9 926.9,320.0 948.2,320.0 969.4,320.0" fill="none" stroke="#1F6F6F" stroke-width="2.6"/><line x1="246" y1="14" x2="272" y2="14" stroke="#E85D4C" stroke-width="3.2"/><text x="278" y="18" font-size="12.5" fill="#1A1A2E">Agosto · antes del piso</text><line x1="516" y1="14" x2="542" y2="14" stroke="#1F6F6F" stroke-width="3.2"/><text x="548" y="18" font-size="12.5" fill="#1A1A2E">Setiembre · con piso</text></svg></div>
+<div style="position:absolute;top:158px;right:58px;width:424px">
+ <div style="font-size:13px;font-weight:bold;color:var(--navy);margin-bottom:8px">Lo que estaba bajo S/30 en agosto</div>
+ <div style="display:flex;gap:12px;margin-bottom:14px">
+  <div style="flex:1"><div class="num" style="color:var(--red);font-size:33px">7.9%</div><div class="slab" style="font-size:9.5px">PEDIDOS</div></div>
+  <div style="flex:1"><div class="num" style="color:var(--navy);font-size:33px">0.58%</div><div class="slab" style="font-size:9.5px">VOLUMEN</div></div>
+  <div style="flex:1"><div class="num" style="color:var(--navy);font-size:33px">0.65%</div><div class="slab" style="font-size:9.5px">VENTA</div></div>
+ </div>
+ <div class="card bg-teal" style="padding:16px 18px"><div class="ct" style="font-size:14px;margin-bottom:7px">Se consolidaron hacia arriba</div><div class="cb" style="font-size:13px">El escalón S/30–50 creció de <b>10.2% a 13.9%</b> de los pedidos: muchos que eran &lt;S/30 ahora caen justo arriba del piso. La mediana del ticket subió de S/128 a S/133.</div></div>
+</div>
+<div class="card bg-white" style="position:absolute;top:420px;left:58px;right:58px;height:170px;padding:15px 22px">
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+  <div style="font-size:14px;font-weight:bold;color:var(--navy)">Los que aún pasan bajo S/30 — características (setiembre)</div>
+  <button class="btn" style="padding:8px 14px;font-size:12px" onclick="document.getElementById('exmodal').classList.add('on')">Ver categorías y ejemplos →</button>
+ </div>
+ <div style="display:flex;gap:20px;margin-bottom:11px">
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--red);line-height:1">6 078</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">pedidos (1.89%) · excepciones</div></div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--navy);line-height:1">S/18.4</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">ticket (mediana S/18.6)</div></div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--navy);line-height:1">54%</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">bajo S/20 · solo 27.1% cerca del piso</div></div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--navy);line-height:1">90.0%</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">clientes con un solo pedido chico</div></div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--navy);line-height:1">46.9% / 51.0%</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">Bronce / NS Chico</div></div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:bold;color:var(--navy);line-height:1">93.4%</div><div style="font-size:10.5px;color:var(--gray);margin-top:5px;line-height:1.3">ya eran clientes de antes</div></div>
+ </div>
+ <div style="border-top:1px solid var(--line);padding-top:9px;font-size:12.5px;color:var(--gray)"><b style="color:var(--navy)">Por categoría:</b> no es una sola — Galletas 17%, Salsas 13%, Cereales 11% (top 3 = 40%). Pero se inclinan a ítems chicos y baratos, sobre-representados: Jabon Liquido (2.2×), Refrescos (1.7×), Harinas (1.6×), Papas Fritas (1.6×); Detergentes y Aceites (voluminosos) casi no aparecen.</div>
+</div>
+<div class="callout c-idea" style="bottom:24px">La lectura: el piso se comió el tail de pedidos chicos (7.9% de pedidos = 0.65% de venta); bajó a 1.9%. Lo que queda son compras sueltas y chicas de pocos ítems, no pedidos a punto de llegar al piso.</div>
+<div class="modal" id="exmodal">
+ <div class="mbox" style="width:900px">
+  <button class="mclose" onclick="document.getElementById('exmodal').classList.remove('on')">✕</button>
+  <div style="font-size:17px;font-weight:bold;color:var(--navy);margin-bottom:4px">Pedidos &lt;S/30 que aún pasan — ¿de qué categoría?</div>
+  <div style="font-size:12.5px;color:var(--gray);margin-bottom:14px">6 078 pedidos bajo el piso en setiembre (1.9%), S/0.11 MM. <b>No son de una categoría sola:</b> replican la mezcla general, pero se inclinan a ítems chicos y baratos. El <b>índice</b> es el peso de la categoría en los &lt;S/30 frente a su peso en los pedidos ≥ S/30 (rojo = sobre-representada).</div>
+  <div style="display:flex;gap:30px">
+   <div style="width:376px;flex:none">
+    <div style="font-size:12.5px;font-weight:bold;color:var(--navy);margin-bottom:10px">Top categorías de los &lt;S/30 (% de líneas · rojo = sobre-representada)</div>
+    <svg viewBox="0 0 400 210" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif"><text x="88" y="26" font-size="14.5" fill="#1A1A2E" text-anchor="end">Galletas</text><rect x="96" y="9" width="220.0" height="22" rx="3" fill="#E85D4C"/><text x="323.0" y="26" font-size="13.5" font-weight="bold" fill="#E85D4C">17% ·1.3×</text><text x="88" y="60" font-size="14.5" fill="#1A1A2E" text-anchor="end">Salsas</text><rect x="96" y="43" width="164.0" height="22" rx="3" fill="#1F6F6F"/><text x="267.0" y="60" font-size="13.5" font-weight="bold" fill="#1F6F6F">13% </text><text x="88" y="94" font-size="14.5" fill="#1A1A2E" text-anchor="end">Cereales</text><rect x="96" y="77" width="140.6" height="22" rx="3" fill="#1F6F6F"/><text x="243.6" y="94" font-size="13.5" font-weight="bold" fill="#1F6F6F">11% </text><text x="88" y="128" font-size="14.5" fill="#1A1A2E" text-anchor="end">Pastas</text><rect x="96" y="111" width="105.4" height="22" rx="3" fill="#1F6F6F"/><text x="208.4" y="128" font-size="13.5" font-weight="bold" fill="#1F6F6F">8% </text><text x="88" y="162" font-size="14.5" fill="#1A1A2E" text-anchor="end">Detergentes</text><rect x="96" y="145" width="56.0" height="22" rx="3" fill="#1F6F6F"/><text x="159.0" y="162" font-size="13.5" font-weight="bold" fill="#1F6F6F">4% </text><text x="88" y="196" font-size="14.5" fill="#1A1A2E" text-anchor="end">Harinas</text><rect x="96" y="179" width="46.9" height="22" rx="3" fill="#E85D4C"/><text x="149.9" y="196" font-size="13.5" font-weight="bold" fill="#E85D4C">4% ·1.6×</text></svg>
+   </div>
+   <div style="flex:1">
+    <div style="font-size:12.5px;font-weight:bold;color:var(--navy);margin-bottom:10px">Ejemplos reales</div>
+    <table style="font-size:12px"><tr><th>Fecha</th><th>DEX</th><th>Segmento</th><th style="text-align:right">Monto</th></tr><tr><td>28-Sep</td><td>Atuq</td><td>s/seg</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/27.22</td></tr><tr><td>06-Oct</td><td>Med</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/23.70</td></tr><tr><td>25-Sep</td><td>Fuerzadex</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/15.88</td></tr><tr><td>11-Sep</td><td>Atuq</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/25.42</td></tr><tr><td>21-Sep</td><td>Distribuciones</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/29.80</td></tr><tr><td>30-Sep</td><td>Pacífico</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/13.92</td></tr><tr><td>03-Sep</td><td>Atipana</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/8.90</td></tr><tr><td>04-Sep</td><td>Fuerzadex</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/10.37</td></tr><tr><td>14-Sep</td><td>Dalimnort</td><td>4 Bronce</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/11.61</td></tr><tr><td>03-Sep</td><td>Alma</td><td>3 Plata</td><td style='text-align:right;font-weight:bold;color:var(--red)'>S/8.70</td></tr></table>
+   </div>
+  </div>
+ </div>
+</div>
+</section><section class="slide "><div class="eyebrow">IMPACTO</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">¿Costó venta o clientes? Los limpió, no los tumbó</div>
+<div class="sub" style="top:124px">Día a Día, agosto (sin piso) contra setiembre (primer mes con piso), mes completo contra mes completo.</div>
+<div style="position:absolute;top:164px;left:58px;right:58px;display:flex;gap:26px">
+ <div style="flex:1"><div class="num" style="color:var(--green);font-size:37px">+9.0%</div><div class="slab">VENTA DÍA A DÍA</div><div class="sdesc">S/68.4→74.6 MM</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--teal);font-size:37px">S/222→232</div><div class="slab">TICKET PROMEDIO</div><div class="sdesc">+4.6% al sacar los chicos</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--teal);font-size:37px">+3.8%</div><div class="slab">CLIENTES ACTIVOS</div><div class="sdesc">106 744→110 849</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--red);font-size:37px">S/0.44 MM</div><div class="slab">VENTA QUE ESTABA BAJO S/30</div><div class="sdesc">0.6% de Día a Día</div></div>
+</div>
+<div style="position:absolute;top:324px;left:58px;font-size:13.5px;font-weight:bold;color:var(--navy)">Retención: de los clientes Día a Día de agosto, ¿cuántos volvieron a comprar en setiembre?</div>
+<div style="position:absolute;top:354px;left:58px;right:58px;display:flex;gap:20px">
+ <div class="card bg-teal" style="flex:1;height:184px"><div class="num" style="color:var(--teal);font-size:38px">92.3%</div><div class="slab">TODOS LOS CLIENTES</div><div class="cb" style="margin-top:9px;font-size:12.5px">Base de referencia: 108 526 clientes. Es la retención normal del negocio.</div></div>
+ <div class="card bg-white" style="flex:1;height:184px"><div class="num" style="color:var(--teal);font-size:38px">91.5%</div><div class="slab">HACÍAN ALGÚN PEDIDO BAJO S/30</div><div class="cb" style="margin-top:9px;font-size:12.5px">19 142 clientes. Retienen casi igual que la base: el piso no los espantó.</div></div>
+ <div class="card bg-red" style="flex:1;height:184px"><div class="num" style="color:var(--red);font-size:38px">80.3%</div><div class="slab">SOLO PEDÍAN BAJO S/30 (EN AGOSTO)</div><div class="cb" style="margin-top:9px;font-size:12.5px">5 824 clientes. Caen 12.0 pts — y casi todos los que siguieron subieron a ≥ S/30.</div></div>
+</div>
+<div class="callout c-idea" style="bottom:26px">El único costo real es chico y concentrado en micro-clientes. Y los más crónicos —los que SIEMPRE compraban bajo S/30, por 6 meses seguidos— ¿se iban o se adaptaron? Lo vemos en la siguiente lámina.</div>
+</section><section class="slide "><div class="eyebrow">LOS CRÓNICOS · 100% BAJO S/30 EN 6 MESES</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">Los crónicos: el 37% volvió, y multiplicó su ticket 6.7×</div>
+<div class="sub" style="top:122px">Clientes de Día a Día cuyos pedidos fueron <b>todos</b> bajo S/30 en los 6 meses antes del piso (mar–ago). Qué hicieron en setiembre.</div>
+<div style="position:absolute;top:160px;left:58px;right:58px;display:flex;gap:16px">
+ <div style="flex:1"><div class="num" style="color:var(--navy);font-size:31px">1 540</div><div class="slab">CLIENTES · 100% &lt;S/30 POR 6 MESES</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--teal);font-size:31px">37.5%</div><div class="slab">VOLVIÓ A COMPRAR EN SETIEMBRE</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--green);font-size:31px">×6.7</div><div class="slab">SU TICKET: S/14 → S/92</div></div>
+ <div style="flex:1"><div class="num" style="color:var(--green);font-size:31px">95.8%</div><div class="slab">DE LOS QUE VOLVIERON, YA ≥ S/30</div></div>
+</div>
+<div style="position:absolute;top:262px;left:58px;width:560px">
+ <div style="font-size:13px;font-weight:bold;color:var(--navy);margin-bottom:8px">Eran compras de una sola vez — meses activos de 6 (mediana: 1)</div>
+ <svg viewBox="0 0 560 92" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif"><rect x="0.0" y="16" width="345.5" height="40" fill="#E85D4C"/><text x="172.7" y="41" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">62%</text><rect x="345.5" y="16" width="144.4" height="40" fill="#E8A298"/><text x="417.6" y="41" font-size="14" font-weight="bold" fill="#1A1A2E" text-anchor="middle">26%</text><rect x="489.8" y="16" width="49.8" height="40" fill="#CFE0E0"/><text x="514.7" y="41" font-size="14" font-weight="bold" fill="#1A1A2E" text-anchor="middle">9%</text><rect x="539.6" y="16" width="20.4" height="40" fill="#9CC2C2"/><rect x="0" y="75" width="11" height="11" rx="2" fill="#E85D4C"/><text x="16" y="84" font-size="11.5" fill="#5A6560">1 mes</text><rect x="67.0" y="75" width="11" height="11" rx="2" fill="#E8A298"/><text x="83.0" y="84" font-size="11.5" fill="#5A6560">2 meses</text><rect x="147.2" y="75" width="11" height="11" rx="2" fill="#CFE0E0"/><text x="163.2" y="84" font-size="11.5" fill="#5A6560">3 meses</text><rect x="227.39999999999998" y="75" width="11" height="11" rx="2" fill="#9CC2C2"/><text x="243.39999999999998" y="84" font-size="11.5" fill="#5A6560">4–6 meses</text></svg>
+</div>
+<div class="card bg-white" style="position:absolute;top:392px;left:58px;width:560px;height:176px">
+ <div class="ct">Ya eran one-off antes del piso</div>
+ <div class="cb" style="font-size:14px">Mediana de <b>1 pedido en 6 meses</b>: el 61.7% compró en un solo mes y el 47.1% no compraba desde junio o antes.<br><br>El ~62% que no volvió en setiembre ya estaba en salida, con o sin piso — no los perdimos por el pedido mínimo.</div></div>
+<div style="position:absolute;top:262px;left:662px;width:560px">
+ <div style="font-size:13px;font-weight:bold;color:var(--navy);margin-bottom:8px">Dónde volvieron y con qué ticket (setiembre)</div>
+ <table style="margin-bottom:14px"><tr><th>Segmento</th><th>Clientes que volvieron</th><th>Ticket set</th></tr><tr><td>4 Bronce</td><td>294</td><td class='best'>S/65</td></tr><tr><td>Por definir</td><td>109</td><td class='best'>S/134</td></tr><tr><td>3 Plata</td><td>37</td><td class='best'>S/139</td></tr><tr><td>2 Oro</td><td>12</td><td class='best'>S/53</td></tr></table>
+ <table><tr><th>Oficina</th><th>Clientes que volvieron</th><th>Ticket set</th></tr><tr><td>NS Chico</td><td>308</td><td class='best'>S/63</td></tr><tr><td>Sur / Centro</td><td>134</td><td class='best'>S/198</td></tr><tr><td>Norte / Oriente</td><td>111</td><td class='best'>S/56</td></tr><tr><td>AS-Lima</td><td>34</td><td class='best'>S/68</td></tr></table>
+ <div class="cb" style="font-size:12px;margin-top:9px;color:var(--glt)">Bronce lidera en clientes; Sur/Centro trae los tickets más altos. Desglose por categoría: pendiente de bajar (celda aparte).</div>
+</div>
+<div class="callout c-idea" style="bottom:26px">La lectura: los crónicos que seguían activos se consolidaron fuerte (ticket ×6.7, 95.8% ya ≥ S/30). Los que no volvieron eran compras de una sola vez que ya se estaban yendo — el piso no los creó, los reveló.</div>
+</section><section class="slide "><div class="eyebrow">DÓNDE PEGA · QUÉ SIGUE</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
+<div class="h1">Dónde ordena más, y qué sigue</div>
+<div class="sub" style="top:124px">Caída de % de pedidos bajo S/30 en Día a Día, ago → set. Donde más pedido chico había, más cae.</div>
+<div style="position:absolute;top:164px;left:58px;width:620px">
+ <div style="font-size:12.5px;font-weight:bold;color:var(--navy);margin-bottom:6px">Por segmento de cliente</div>
+ <table><tr><th>Segmento</th><th>Ago</th><th>Set</th><th>Δ pts</th></tr><tr><td>4 Bronce</td><td>11.5%</td><td class='best'>2.2%</td><td class='bad'>-9.3</td></tr><tr><td>3 Plata</td><td>5.1%</td><td class='best'>1.8%</td><td class='bad'>-3.3</td></tr><tr><td>2 Oro</td><td>3.4%</td><td class='best'>1.4%</td><td class='bad'>-2.0</td></tr><tr><td>1 Oro+</td><td>2.0%</td><td class='best'>0.9%</td><td class='bad'>-1.1</td></tr><tr><td>Por definir</td><td>9.9%</td><td class='best'>2.2%</td><td class='bad'>-7.7</td></tr></table>
+ <div style="font-size:12.5px;font-weight:bold;color:var(--navy);margin:16px 0 6px">Por oficina de venta</div>
+ <table><tr><th>Oficina</th><th>Ago</th><th>Set</th><th>Δ pts</th><th>Venta set</th></tr><tr><td>NS Chico (Lima)</td><td>9.0%</td><td class='best'>1.7%</td><td class='bad'>-7.3</td><td>S/40 MM</td></tr><tr><td>Sur / Centro</td><td>6.0%</td><td class='best'>1.9%</td><td class='bad'>-4.1</td><td>S/16 MM</td></tr><tr><td>Norte / Oriente</td><td>6.5%</td><td class='best'>1.7%</td><td class='bad'>-4.8</td><td>S/15 MM</td></tr><tr><td>AS-Lima</td><td>8.1%</td><td class='best'>4.1%</td><td class='bad'>-3.9</td><td>S/2 MM</td></tr><tr><td>AS-Provincia</td><td>7.7%</td><td class='best'>4.2%</td><td class='bad'>-3.5</td><td>S/1 MM</td></tr></table></div>
+<div class="card bg-white" style="position:absolute;top:164px;right:58px;width:400px;height:404px">
+ <div class="ct">Qué falta y qué proponemos</div>
+ <div class="cb" style="font-size:13px"><b>Cerrar octubre para Insuma.</b> Su corte el 1-oct es real pero preliminar.<br><br>
+ <b>Recuperar a los micro-clientes con hábito.</b> Pocos, pero reales: acción comercial (agrupar visita, combos ≥ S/30).<br><br>
+ <b>Decidir Nitro y Odoo.</b> Hoy sin piso; son el 60% de la venta.<br><br>
+ <b>Revisar los que aún pasan.</b> 6 078 pedidos/mes bajo S/30 (excepciones): ver si hay fugas al piso.</div></div>
+<div class="callout c-ask" style="bottom:66px">Lo que proponemos: dar por bueno el piso en Día a Día, seguir Insuma hasta cerrar octubre, lanzar la acción para micro-clientes y evaluar extender el piso a Nitro.</div>
+<div class="foot" style="bottom:148px;left:58px;right:58px">Fuente: base de pedidos DEX · 1 565 620 pedidos · 2026-08-01 a 2026-10-09 · cohorte 6 meses (mar–oct) · negativos excluidos · octubre en avance.</div>
+</section></div>
+<div id="hint">← → para navegar · P para imprimir/PDF</div>
+<div id="nav"><button id="prev">‹</button><span id="counter"></span><button id="next">›</button></div>
+<script>
+const SL=[...document.querySelectorAll('.slide')];let i=0;
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);SL.forEach(x=>x.style.transform=`scale(${s})`);}
+function show(n){i=Math.max(0,Math.min(SL.length-1,n));SL.forEach((s,k)=>s.classList.toggle('on',k===i));
+ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on'));
+ document.getElementById('counter').textContent=(i+1)+' / '+SL.length;
+ document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===SL.length-1;}
+document.getElementById('prev').onclick=()=>show(i-1);document.getElementById('next').onclick=()=>show(i+1);
+addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on'));return;}
+ if(e.key==='ArrowRight'||e.key===' ')show(i+1);else if(e.key==='ArrowLeft')show(i-1);else if(e.key==='p'||e.key==='P')print();});
+addEventListener('resize',fit);fit();show(0);
+</script></body></html>
