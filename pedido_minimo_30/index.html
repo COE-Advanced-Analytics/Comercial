@@ -81,7 +81,56 @@ td.best{font-weight:bold;color:var(--teal)}td.bad{font-weight:bold;color:var(--r
  <div class="cb" style="font-size:14px"><b>Modalidad:</b> la fuerza de autoventa — Día a Día (A), Insuma (B), Nitro (N), Odoo.<br><br>
  <b>Control:</b> Nitro no tiene piso; si algo cambió por el piso y no por estacionalidad, se ve en A/B y no en Nitro.<br><br>
  <b>Octubre*:</b> mes en avance, datos al 9-oct.</div></div>
+<div style="position:absolute;top:548px;left:58px;width:638px">
+ <div style="font-size:11px;font-weight:bold;color:var(--glt);letter-spacing:.6px;margin-bottom:10px">CONFIGURACIÓN DEL MONTO MÍNIMO (SEGÚN SISTEMAS)</div>
+ <div style="display:flex;gap:12px">
+  <button class="btn" onclick="document.getElementById('moddd').classList.add('on')">Día a Día · piso S/30 →</button>
+  <button class="btn" onclick="document.getElementById('modins').classList.add('on')">Insuma · pisos S/20–S/50 →</button>
+ </div>
+</div>
 <div class="callout c-idea" style="bottom:26px">La idea: mismo piso para todos, pero prendido por olas — primero Día a Día en setiembre, Insuma en octubre; Nitro y Odoo, pendientes.</div>
+<div class="modal" id="moddd">
+ <div class="mbox" style="width:680px">
+  <button class="mclose" onclick="document.getElementById('moddd').classList.remove('on')">✕</button>
+  <div style="font-size:17px;font-weight:bold;color:var(--navy);margin-bottom:4px">Monto mínimo — Día a Día</div>
+  <div style="font-size:12.5px;color:var(--gray);margin-bottom:16px">El servicio de CIA devuelve el piso por <b>fuerza de venta × grupo de precio</b>. Si el cliente no cae en ninguna configuración, usa el piso por defecto.</div>
+  <div style="display:flex;gap:14px;margin-bottom:18px">
+   <div class="card bg-teal" style="flex:1;padding:15px 18px"><div style="font-size:30px;font-weight:bold;color:var(--teal);line-height:1">S/30</div><div class="slab" style="margin-top:6px">PISO ÚNICO · PAREJO EN TODAS LAS COMBINACIONES</div></div>
+   <div class="card bg-white" style="flex:1;padding:15px 18px"><div style="font-size:30px;font-weight:bold;color:var(--navy);line-height:1">S/0</div><div class="slab" style="margin-top:6px">POR DEFECTO · SI NO CAE EN NINGUNA REGLA</div></div>
+  </div>
+  <div style="font-size:12.5px;color:var(--navy);font-weight:bold;margin-bottom:10px">Aplica a 40 fuerzas de venta × 6 grupos de precio (bocas):</div>
+  <div style="margin-bottom:14px">
+   <span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Bodega</span><span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Puesto de mercado</span><span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Minimark / Est. Serv.</span><span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Mayoristas</span><span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Farmacias</span><span style="display:inline-block;background:var(--teal-bg);color:var(--teal);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Altern. Bodegas</span>
+  </div>
+  <div style="font-size:11.5px;color:var(--glt);line-height:1.5">241 reglas en total — 240 a S/30 (producto de 40 fuerzas × 6 grupos) + 1 por defecto a S/0. Fuente: configuración de Sistemas, erpCode 0002.</div>
+ </div>
+</div>
+<div class="modal" id="modins">
+ <div class="mbox" style="width:680px">
+  <button class="mclose" onclick="document.getElementById('modins').classList.remove('on')">✕</button>
+  <div style="font-size:17px;font-weight:bold;color:var(--navy);margin-bottom:4px">Monto mínimo — Insuma</div>
+  <div style="font-size:12.5px;color:var(--gray);margin-bottom:16px">Acá el piso <b>no es parejo</b>: cambia por <b>boca de salida</b> y por <b>sucursal</b>. Si el cliente no cae en ninguna configuración, el piso por defecto es S/1.</div>
+  <div style="display:flex;gap:26px">
+   <div style="width:290px;flex:none">
+    <div style="font-size:12px;font-weight:bold;color:var(--navy);margin-bottom:8px">Pisos vigentes · cuántas combinaciones usan cada uno</div>
+    <table style="font-size:12.5px">
+     <tr><th>Piso</th><th style="text-align:right">Combinaciones</th></tr>
+     <tr><td>S/20</td><td style="text-align:right">73</td></tr>
+     <tr><td>S/25</td><td style="text-align:right">9</td></tr>
+     <tr><td>S/30</td><td style="text-align:right">65</td></tr>
+     <tr><td>S/50</td><td style="text-align:right">60</td></tr>
+     <tr><td>S/1 · por defecto</td><td style="text-align:right">1</td></tr>
+    </table>
+   </div>
+   <div style="flex:1">
+    <div style="font-size:12px;font-weight:bold;color:var(--navy);margin-bottom:8px">Bocas de salida</div>
+    <div style="margin-bottom:16px"><span style="display:inline-block;background:var(--gold-bg);color:var(--goldt);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Gastronomía</span><span style="display:inline-block;background:var(--gold-bg);color:var(--goldt);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Limpieza</span><span style="display:inline-block;background:var(--gold-bg);color:var(--goldt);padding:4px 11px;border-radius:6px;font-weight:bold;font-size:11.5px;margin:0 6px 7px 0">Panificación</span></div>
+    <div style="font-size:12.5px;color:var(--gray);line-height:1.6"><b style="color:var(--navy)">4 fuerzas de venta:</b> AUTO, CLEAN, FOCUS, MULTI3.<br><b style="color:var(--navy)">Varía por sucursal</b> — p. ej. Moyobamba, Ayacucho, Andahuaylas.</div>
+   </div>
+  </div>
+  <div style="font-size:11.5px;color:var(--glt);margin-top:14px;line-height:1.5">208 reglas en total. Fuente: configuración de Sistemas (QA, muy similar a PRD), erpCode 0002.</div>
+ </div>
+</div>
 </section><section class="slide "><div class="eyebrow">EL CORTE</div><div class="chip">PEDIDO MÍNIMO · DEX</div>
 <div class="h1">El corte se ve de un día al otro</div>
 <div class="sub" style="top:122px"><b>% de pedidos bajo S/30, por día.</b> Cada modalidad cae justo en su fecha; Nitro, sin piso, se queda arriba — prueba de que el quiebre lo hizo el piso, no la temporada.</div>
