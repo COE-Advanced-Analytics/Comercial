@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infaltables: análisis de performance</title>
+<style>
+:root{--bg:#F4F1EB;--ink:#1A1A2E;--text:#3D3A36;--muted:#6E6A63;--line:#D9D2C4;--card:#FFFFFF;
+--teal:#2D9C9C;--teal-d:#1E7272;--teal-t:#E2F1F0;--coral:#E85D4C;--coral-d:#B5392A;--coral-t:#FBE6E2;--gold:#C99A3E;
+--c0:#E2F1F0;--c1:#BFE0DD;--c2:#93CBC7;--c3:#5DADA9;--c4:#1E7272}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#E4DED2;font-family:Arial,Helvetica,sans-serif;color:var(--text);overflow:hidden}
+.escenario{position:fixed;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:40px 64px 30px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transition:opacity .25s ease}
+.slide.activa{opacity:1;visibility:visible}
+@media (prefers-reduced-motion: reduce){.slide{transition:none}}
+.cabecera{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.seccion{font-size:13px;font-weight:bold;letter-spacing:1.4px;text-transform:uppercase;color:var(--teal-d)}
+.nuevo .seccion{color:var(--coral-d)}
+.general .seccion{color:var(--teal-d)}
+.etiqueta{font-size:11.5px;font-weight:bold;letter-spacing:.8px;text-transform:uppercase;background:var(--teal-t);
+  color:var(--teal-d);border-radius:7px;padding:8px 14px}
+.nuevo .etiqueta{background:var(--coral-t);color:var(--coral-d)}
+h1{font-size:40px;line-height:1.12;color:var(--ink);margin:0 0 10px;max-width:1100px}
+h2{font-size:21px;color:var(--ink);margin:0 0 6px}
+h3{font-size:18px;color:var(--ink);margin:0 0 6px}
+p{margin:0}
+.bajada{font-size:19px;line-height:1.45;max-width:1060px}
+.cuerpo{flex:1;display:flex;gap:32px;margin-top:20px;min-height:0;align-items:center}
+.cuerpo.dos{align-items:stretch}
+.cuerpo.dos>*{flex:1}
+.cuerpo.dos>.angosta{flex:.86}
+.cuerpo.dos>.ancha{flex:1.14}
+.cuerpo.dos.centrado{align-items:center}
+.columna-unica{flex-direction:column;align-items:stretch;justify-content:center;gap:20px}
+.recuadro{margin-top:16px;background:var(--teal-t);border-left:6px solid var(--teal);padding:14px 22px;font-size:19px;line-height:1.4;
+  color:var(--ink);font-weight:bold;border-radius:0 8px 8px 0}
+.nuevo .recuadro{background:var(--coral-t);border-left-color:var(--coral)}
+.general .recuadro{background:#E9E3D8;border-left-color:var(--ink)}
+.recuadro .delta{display:inline;font-size:inherit}
+.recuadro .rotulo{margin-right:2px}
+.recuadro.leer{background:var(--teal-t);border-left-color:var(--teal)}
+.pie{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:12px;padding-right:110px}
+.pie .numero{font-weight:bold;color:var(--ink)}
+.pie .fuente{flex:1;text-align:right}
+.tarjeta{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.tarjeta p{font-size:16px;line-height:1.45}
+.cifra{font-weight:bold;line-height:1.05}
+.nw{white-space:nowrap}
+/* portada */
+.portada .portada-cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}
+.portada h1{font-size:56px;max-width:1152px;margin-bottom:14px}
+.portada .bajada{font-size:21px;max-width:960px}
+.kpis-fila{display:flex;gap:28px;margin-top:34px}
+.kpi{flex:1;border-top:3px solid var(--coral);padding-top:14px}
+.kpi.web{border-top-color:var(--teal)}
+.kpi-num{font-size:46px;font-weight:bold;line-height:1;color:var(--coral-d);white-space:nowrap}
+.kpi.web .kpi-num{color:var(--teal-d)}
+.kpi-rotulo{font-size:12px;font-weight:bold;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:10px}
+.kpi-desc{font-size:15px;color:var(--text);margin-top:6px;line-height:1.4}
+/* lógica */
+.cuatro{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.cuatro .tarjeta{border-top:5px solid var(--coral);border-radius:4px 4px 10px 10px;padding:16px 18px}
+.cuatro .tarjeta p{font-size:15px;line-height:1.42}
+.num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+  background:var(--coral-d);color:#fff;font-weight:bold;font-size:15px;margin-bottom:8px}
+.nota-linea{font-size:15px;color:var(--muted)}
+.flujo{display:flex;align-items:center;gap:10px}
+.paso-flujo{flex:1;background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:12px 8px;text-align:center;
+  font-size:17px;font-weight:bold;color:var(--ink);line-height:1.25}
+.paso-flujo small{display:block;font-weight:normal;font-size:14px;color:var(--muted)}
+.paso-flujo.oscuro{background:var(--ink);color:#fff}
+.paso-flujo.oscuro small{color:#D9D6E8}
+.flecha{flex:none;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid var(--ink)}
+/* captura: indicadores del tablero */
+.kpis{width:100%;border-collapse:collapse;font-size:17px}
+.kpis th,.kpis td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right}
+.kpis th:first-child{text-align:left}
+.kpis thead th{font-size:14px;color:var(--muted)}
+.kpis tbody th{font-weight:normal;color:var(--text);font-size:16px}
+.kpis td{font-weight:bold;color:var(--ink)}
+.kpis tr.inf td{color:var(--coral-d)}
+.destacados{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.destacado{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:center}
+.destacado .cifra{font-size:34px;color:var(--coral-d);white-space:nowrap}
+.destacado .rot{font-size:11px;font-weight:bold;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
+.destacado .des{font-size:14px;color:var(--text);line-height:1.35;margin-top:2px}
+/* captura: cohortes */
+.grafico{margin:0;display:flex;flex-direction:column}
+.grafico-titulo{font-size:17px;font-weight:bold;color:var(--ink)}
+.leyenda{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--text);margin:4px 0 4px;align-items:center}
+.leyenda>span{display:inline-flex;align-items:center;gap:5px}
+.leyenda i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.leyenda .leyenda-titulo{color:var(--muted)}
+.leyenda b.guion{color:#A8A296;font-weight:normal;width:12px;text-align:center}
+.leyenda i.c0{background:var(--c0);outline:1px solid #CFE3E1}.leyenda i.c1{background:var(--c1)}.leyenda i.c2{background:var(--c2)}
+.leyenda i.c3{background:var(--c3)}.leyenda i.c4{background:var(--c4)}
+.cohortes{width:100%;border-collapse:separate;border-spacing:2px;font-size:13.5px}
+.cohortes thead th{font-size:12.5px;color:var(--muted);font-weight:bold;text-align:center;padding:0 4px 2px;line-height:1.2}
+.cohortes thead th:first-child,.cohortes thead th:last-child{text-align:left}
+.cohortes thead th:nth-child(2){text-align:right;padding-right:12px}
+.cohortes tbody th{text-align:left;font-weight:bold;color:var(--ink);padding:0 6px 0 2px;white-space:nowrap}
+.cohortes td{text-align:center;padding:2px 6px;border-radius:4px;color:var(--ink);white-space:nowrap}
+.cohortes td.m0{text-align:right;color:var(--text);padding-right:12px}
+.barra-rec{display:inline-block;width:110px;height:10px;flex:none}
+.barra-rec i{display:block;height:100%;background:var(--teal);border-radius:0 4px 4px 0}
+.barra-rec.parcial i{background:#A9D6D4}
+.tarjeta p.como-leer{font-size:13.5px;color:var(--text);margin:4px 0 2px;line-height:1.35}
+.como-leer b{color:var(--ink)}
+.cohortes .monto{color:var(--text)}
+.cohortes td.c0{background:var(--c0)}.cohortes td.c1{background:var(--c1)}.cohortes td.c2{background:var(--c2)}
+.cohortes td.c3{background:var(--c3)}.cohortes td.c4{background:var(--c4);color:#fff;font-weight:bold}
+.cohortes td.vacio{color:#A8A296}
+.cohortes td.acum{font-weight:bold;text-align:left;display:flex;align-items:center;gap:8px;padding-left:6px}
+.cohortes td.acum.parcial{color:var(--muted);font-weight:normal}
+.cohortes tr.resumen th,.cohortes tr.resumen td{border-top:2px solid var(--ink);font-weight:bold}
+.cohortes tr.resumen th{padding-top:4px}
+/* metodología */
+.figura{margin:0}
+.figura figcaption{font-size:15px;color:var(--muted);margin-top:4px;line-height:1.4}
+.definiciones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 28px;margin:0}
+.definiciones dt{font-weight:bold;color:var(--ink);font-size:16px}
+.definiciones dd{margin:3px 0 0;font-size:15px;line-height:1.4}
+/* tablas de resultados y de métricas: mismo formato */
+.resultados,.metricas{width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.metricas{table-layout:fixed}
+.resultados caption,.metricas caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted);padding:0 0 6px}
+.resultados th,.resultados td,.metricas th,.metricas td{padding:4px 10px;text-align:center;border-bottom:1px solid var(--line)}
+.resultados thead th,.metricas thead th{background:var(--ink);color:#fff;font-size:14px;border-bottom:none;line-height:1.25;padding:7px 10px}
+.resultados thead tr.grupos th:first-child,.metricas thead th:first-child{border-radius:8px 0 0 0}
+.resultados thead tr.grupos th:last-child,.metricas thead th:last-child{border-radius:0 8px 0 0}
+.resultados thead tr.sub th{background:#34344F;font-weight:normal;font-size:13.5px;padding:4px 10px}
+.resultados thead th.sep{border-left:2px solid var(--bg)}
+.resultados tbody th,.metricas tbody th{text-align:left;color:var(--ink);background:rgba(255,255,255,.6)}
+.resultados td,.metricas td{background:rgba(255,255,255,.6);color:var(--ink)}
+.resultados td.cli{color:var(--text);white-space:nowrap}
+.resultados tr.total th,.resultados tr.total td{background:#fff;font-weight:bold}
+.resultados td.foco{background:#E2F1F0}
+.resultados tr.total td.foco{background:#D3EAE8}
+.resultados thead tr.sub th.foco{background:var(--teal-d);font-weight:bold}
+.par{display:block;white-space:nowrap}
+.delta{display:block;font-size:13px;font-weight:bold;white-space:nowrap}
+.metricas .delta{display:inline;font-size:15px}
+.delta.sube{color:var(--teal-d)}
+.delta.baja{color:var(--coral-d)}
+.delta.igual{color:var(--muted)}
+.metricas tbody th{font-size:16px;font-weight:bold;line-height:1.25;padding:9px 10px;white-space:nowrap}
+.metricas td{font-size:17px;white-space:nowrap}
+.metricas tr.grupo th{background:transparent;color:var(--teal-d);font-size:14px;padding:12px 10px 4px;border-bottom:1.5px solid var(--teal)}
+.metricas thead th:first-child{text-align:left}
+/* lámina 6: tarjetas de abajo */
+.cuerpo.seis{gap:16px}
+.nv-tarjetas{display:grid;grid-template-columns:1fr 1.18fr;gap:22px}
+.nv-recompra{display:flex;align-items:center;gap:22px;padding:16px 24px}
+.nv-cifra{font-size:46px;font-weight:bold;line-height:1;color:var(--teal-d);flex:none}
+.nv-recompra-texto{flex:1;display:flex;flex-direction:column;gap:8px}
+.nv-recompra p{font-size:16px;line-height:1.4}
+.nv-barras{display:flex;flex-direction:column;gap:6px}
+.nv-fila{display:grid;grid-template-columns:98px 1fr 50px;gap:8px;align-items:center;font-size:14px}
+.nv-fila b{text-align:right;color:var(--ink)}
+.nv-barra{display:block;height:12px;background:#ECE7DE;border-radius:0 4px 4px 0}
+.nv-barra i{display:block;height:100%;background:var(--teal);border-radius:0 4px 4px 0}
+.nv-fila.fuera .nv-barra i{background:#C9C2B4}
+.nv-cat{display:grid;grid-template-columns:214px 1fr;gap:20px;align-items:center;padding:16px 24px}
+.nv-cat-encabezado{display:flex;flex-direction:column;gap:6px}
+.nv-cat .nv-cat-sub,.nv-cat .nv-cat-nota{font-size:13px;line-height:1.35;color:var(--muted)}
+.nv-cat-filas{display:flex;flex-direction:column;gap:7px}
+.nv-cat-fila{display:grid;grid-template-columns:98px 1fr 50px;gap:8px;align-items:center;font-size:14px}
+.nv-cat-fila b{text-align:right;color:var(--ink)}
+.nv-cat-barra{display:block;height:12px}
+.nv-cat-barra i{display:block;height:100%;background:var(--teal);border-radius:0 4px 4px 0}
+/* lectura final */
+.hallazgo .n{width:34px;height:34px;flex:none;background:var(--coral-d);color:#fff;border-radius:8px;font-size:16px;
+  font-weight:bold;display:flex;align-items:center;justify-content:center}
+.hallazgos{display:flex;flex-direction:column;gap:12px;width:100%}
+.hallazgo{display:flex;gap:18px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:14px 26px}
+.hallazgo.hoy .n{background:var(--ink)}
+.hallazgo.web .n{background:var(--teal-d)}
+.hallazgo h3{font-size:21px;margin:2px 0 6px}
+.hallazgo p{font-size:17px;line-height:1.45}
+.hallazgo b{color:var(--ink)}
+/* controles */
+.controles{position:fixed;right:16px;bottom:14px;display:flex;gap:8px;z-index:5}
+.controles button{font:bold 18px Arial,sans-serif;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ink);
+  background:#fff;color:var(--ink);cursor:pointer}
+.controles button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.controles button:disabled{opacity:.35;cursor:default}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;background:var(--bg)}
+  .escenario{position:static;transform:none!important;width:1280px;height:auto}
+  .slide{position:relative;opacity:1;visibility:visible;width:1280px;height:720px;break-after:page}
+  .controles{display:none}
+}
+</style>
+</head>
+<body>
+<main class="escenario" aria-roledescription="presentación">
+<section class="slide nuevo portada" aria-label="Portada">
+  <header class="cabecera"><span class="seccion">Análisis de performance</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <div class="portada-cuerpo">
+    <h1>Infaltables en Web Aliados</h1>
+    <p class="bajada">Le recomienda a cada cliente MA lo que compra su segmento y él todavía no, en Web Aliados. Esta es la foto desde jul-25, cuando entró, hasta set-26.</p>
+    <div class="kpis-fila">
+      <div class="kpi"><div class="kpi-num">S/ 3.6 M</div><div class="kpi-rotulo">Venta Infaltables 2026</div><div class="kpi-desc">ene–set · promedio mensual +19.7% <span class="nw">vs jul–dic 2025</span></div></div>
+      <div class="kpi"><div class="kpi-num">S/ 1.1</div><div class="kpi-rotulo">Recompra por cada S/ 1 sembrado</div><div class="kpi-desc">en los 3 meses siguientes · siembras <span class="nw">de ene a jun</span></div></div>
+      <div class="kpi web"><div class="kpi-num">66.0%</div><div class="kpi-rotulo">Clientes web con SKU nuevo</div><div class="kpi-desc">al mes · 57.0% antes</div></div>
+      <div class="kpi web"><div class="kpi-num">59.3%</div><div class="kpi-rotulo">Lo nuevo, por la web</div><div class="kpi-desc">de los clientes con SKU nuevo lo compra ahí · 18.2% antes</div></div>
+    </div>
+  </div>
+  <div class="recuadro">Infaltables ya vende más que en 2025, lo que siembra se vuelve a comprar y vive en la web, que es donde hoy se compra lo nuevo.</div>
+  <footer class="pie"><span class="numero">1 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Octubre 2026</span></footer>
+</section>
+<section class="slide nuevo" aria-label="Cómo funciona">
+  <header class="cabecera"><span class="seccion">Cómo funciona</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>Le recomienda a cada cliente lo que todavía no compra</h1>
+  <p class="bajada">Web Aliados: productos que compra su segmento y él no compró en 12 meses.</p>
+  <div class="cuerpo columna-unica">
+    <div class="cuatro">
+      <div class="tarjeta"><span class="num">1</span><h3>Candidatos</h3><p>Core y value (CP1 y CP2) que compra su segmento y él no.</p></div>
+      <div class="tarjeta"><span class="num">2</span><h3>Score de 0 a 100</h3><p>40% co-ocurrencia, 30% popularidad en su segmento, 20% popularidad general y 10% novedad.</p></div>
+      <div class="tarjeta"><span class="num">3</span><h3>Cuántos</h3><p>Hasta 60 por cliente, según su segmento, respetando categorías y temporada. Respetando tambien Clientes Especialozados (Impulso)</p></div>
+      <div class="tarjeta"><span class="num">4</span><h3>En qué orden</h3><p>Primero las 7 categorías priorizadas; dentro de cada una, lo de mejor score.</p></div>
+    </div>
+    <p class="nota-linea">Categorías priorizadas: Aceites, Detergentes, Galletas, Insecticidas,Panetones*, Shampoo, Pastas y Salsas.</p>
+    <div class="flujo">
+      <div class="paso-flujo">Primer día hábil del mes<small>calcula hasta 60</small></div><span class="flecha"></span>
+      <div class="paso-flujo">En la web<small>30 visibles + 30 de reserva</small></div><span class="flecha"></span>
+      <div class="paso-flujo">Cada lunes<small>se reordena</small></div><span class="flecha"></span>
+      <div class="paso-flujo oscuro">Si lo compra<small>pasa a Imperdonables</small></div>
+    </div>
+  </div>
+  <div class="recuadro">Prioriza lo que suele acompañar a lo que el cliente ya compra.</div>
+  <footer class="pie"><span class="numero">2 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Fuente: Dos palancas, Imperdonables e Infaltables (lógica a oct-26)</span></footer>
+</section>
+<section class="slide nuevo" aria-label="Captura de Infaltables">
+  <header class="cabecera"><span class="seccion">Captura de Infaltables</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>Infaltables vende S/ 3.6 M en 2026, 20% más al mes que en 2025</h1>
+  <div class="cuerpo dos">
+    <div class="tarjeta angosta">
+      <table class="kpis">
+        <thead><tr><th></th><th>2025 · ene–dic</th><th>2026 · ene–set</th></tr></thead>
+        <tbody>
+          <tr><th>Venta canal MA</th><td>S/ 589.2 M</td><td>S/ 446.5 M</td></tr>
+          <tr class="inf"><th>Venta Infaltables</th><td>S/ 2.0 M</td><td>S/ 3.6 M</td></tr>
+          <tr><th>Clientes MA</th><td>254</td><td>230</td></tr>
+          <tr class="inf"><th>Clientes con Infaltables</th><td>110</td><td>136</td></tr>
+        </tbody>
+      </table>
+      <div class="destacados">
+        <div class="destacado"><span class="cifra">+19.7%</span><div><div class="rot">Venta promedio al mes</div><div class="des">S/ 399 mil en 2026 vs S/ 333 mil en <span class="nw">jul–dic 2025</span></div></div></div>
+        <div class="destacado"><span class="cifra">0.8%</span><div><div class="rot">De la venta del canal MA</div><div class="des">en 2026</div></div></div>
+        <div class="destacado"><span class="cifra">59.1%</span><div><div class="rot">De los clientes MA compró de su lista</div><div class="des"><span class="nw">136 de 230</span> en 2026</div></div></div>
+      </div>
+    </div>
+    <figure class="tarjeta grafico ancha">
+      <div class="grafico-titulo">Recompra por mes de siembra, 2026</div>
+      <p class="como-leer"><b>Cómo leer:</b> de cada S/ 100 sembrados en ene, se recompraron S/ 39.3 en el mes 1, S/ 25.8 en el mes 2 y S/ 33.9 en el mes 3. La barra suma los tres meses: S/ 849 mil en ene.</p>
+      <div class="leyenda calor"><span class="leyenda-titulo">% de lo sembrado:</span><span><i class="c0"></i>&lt;25%</span><span><i class="c1"></i>25–35%</span><span><i class="c2"></i>35–45%</span><span><i class="c3"></i>45–60%</span><span><i class="c4"></i>60% o más</span><span><b class="guion">–</b>aún no pasa</span><span><b class="guion">*</b>parcial</span></div>
+      <table class="cohortes"><thead><tr><th scope="col">Siembra</th><th scope="col">Sembrado (M0)</th><th scope="col">Mes 1</th><th scope="col">Mes 2</th><th scope="col">Mes 3</th><th scope="col">Recompra acumulada (M1 a M3)</th></tr></thead><tbody><tr><th scope="row">Ene</th><td class="m0">S/ 858 mil</td><td class="c2" title="Ene, mes 1: S/ 337,166 (39.3% de lo sembrado)">39.3%</td><td class="c1" title="Ene, mes 2: S/ 221,123 (25.8% de lo sembrado)">25.8%</td><td class="c1" title="Ene, mes 3: S/ 290,626 (33.9% de lo sembrado)">33.9%</td><td class="acum" title="S/ 848,915"><span class="barra-rec"><i style="width:100.0%"></i></span><span class="monto">S/ 849 mil</span></td></tr><tr><th scope="row">Feb</th><td class="m0">S/ 398 mil</td><td class="c2" title="Feb, mes 1: S/ 149,789 (37.6% de lo sembrado)">37.6%</td><td class="c2" title="Feb, mes 2: S/ 152,049 (38.2% de lo sembrado)">38.2%</td><td class="c1" title="Feb, mes 3: S/ 119,271 (29.9% de lo sembrado)">29.9%</td><td class="acum" title="S/ 421,109"><span class="barra-rec"><i style="width:49.6%"></i></span><span class="monto">S/ 421 mil</span></td></tr><tr><th scope="row">Mar</th><td class="m0">S/ 351 mil</td><td class="c3" title="Mar, mes 1: S/ 198,702 (56.6% de lo sembrado)">56.6%</td><td class="c4" title="Mar, mes 2: S/ 264,554 (75.4% de lo sembrado)">75.4%</td><td class="c1" title="Mar, mes 3: S/ 105,756 (30.1% de lo sembrado)">30.1%</td><td class="acum" title="S/ 569,012"><span class="barra-rec"><i style="width:67.0%"></i></span><span class="monto">S/ 569 mil</span></td></tr><tr><th scope="row">Abr</th><td class="m0">S/ 193 mil</td><td class="c2" title="Abr, mes 1: S/ 71,381 (37.1% de lo sembrado)">37.1%</td><td class="c0" title="Abr, mes 2: S/ 31,537 (16.4% de lo sembrado)">16.4%</td><td class="c2" title="Abr, mes 3: S/ 73,339 (38.1% de lo sembrado)">38.1%</td><td class="acum" title="S/ 176,257"><span class="barra-rec"><i style="width:20.8%"></i></span><span class="monto">S/ 176 mil</span></td></tr><tr><th scope="row">May</th><td class="m0">S/ 174 mil</td><td class="c0" title="May, mes 1: S/ 41,987 (24.1% de lo sembrado)">24.1%</td><td class="c1" title="May, mes 2: S/ 57,345 (32.9% de lo sembrado)">32.9%</td><td class="c1" title="May, mes 3: S/ 52,966 (30.4% de lo sembrado)">30.4%</td><td class="acum" title="S/ 152,298"><span class="barra-rec"><i style="width:17.9%"></i></span><span class="monto">S/ 152 mil</span></td></tr><tr><th scope="row">Jun</th><td class="m0">S/ 103 mil</td><td class="c2" title="Jun, mes 1: S/ 41,033 (39.8% de lo sembrado)">39.8%</td><td class="c1" title="Jun, mes 2: S/ 31,926 (31.0% de lo sembrado)">31.0%</td><td class="c4" title="Jun, mes 3: S/ 68,272 (66.2% de lo sembrado)">66.2%</td><td class="acum" title="S/ 141,231"><span class="barra-rec"><i style="width:16.6%"></i></span><span class="monto">S/ 141 mil</span></td></tr><tr><th scope="row">Jul</th><td class="m0">S/ 260 mil</td><td class="c1" title="Jul, mes 1: S/ 69,793 (26.8% de lo sembrado)">26.8%</td><td class="c2" title="Jul, mes 2: S/ 94,876 (36.5% de lo sembrado)">36.5%</td><td class="vacio" title="Todavía no pasa">–</td><td class="acum parcial" title="S/ 164,669"><span class="barra-rec parcial"><i style="width:19.4%"></i></span><span class="monto">S/ 165 mil*</span></td></tr><tr><th scope="row">Ago</th><td class="m0">S/ 317 mil</td><td class="c0" title="Ago, mes 1: S/ 61,243 (19.3% de lo sembrado)">19.3%</td><td class="vacio" title="Todavía no pasa">–</td><td class="vacio" title="Todavía no pasa">–</td><td class="acum parcial" title="S/ 61,243"><span class="barra-rec parcial"><i style="width:7.2%"></i></span><span class="monto">S/ 61 mil*</span></td></tr><tr><th scope="row">Set</th><td class="m0">S/ 937 mil</td><td class="vacio" title="Todavía no pasa">–</td><td class="vacio" title="Todavía no pasa">–</td><td class="vacio" title="Todavía no pasa">–</td><td class="acum vacio">–</td></tr><tr class="resumen"><th scope="row">Ene–jun</th><td class="m0">S/ 2.1 M</td><td class="c2" title="Ene–jun, mes 1: S/ 840,058 (40.4% de lo sembrado)">40.4%</td><td class="c2" title="Ene–jun, mes 2: S/ 758,534 (36.5% de lo sembrado)">36.5%</td><td class="c1" title="Ene–jun, mes 3: S/ 710,230 (34.2% de lo sembrado)">34.2%</td><td class="acum" title="S/ 2,308,822"><span class="monto">S/ 2.3 M</span></td></tr></tbody></table>
+    </figure>
+  </div>
+  <div class="recuadro">Lo sembrado de ene a jun se recompró en los 3 meses siguientes: S/ 1.1 por cada S/ 1 (S/ 2.3 M).</div>
+  <footer class="pie"><span class="numero">3 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Venta Infaltables (M0): compra web de SKUs de la lista del cliente. 2025 cuenta desde jul. Fuente: tablero Impacto Infaltables.</span></footer>
+</section>
+<section class="slide general" aria-label="Metodología">
+  <header class="cabecera"><span class="seccion">Metodología</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>Cómo medimos si el cliente compra algo nuevo</h1>
+  <div class="cuerpo columna-unica">
+    <figure class="figura">
+      <svg viewBox="0 0 1150 112" width="1150" height="112" role="img" aria-labelledby="t-tiempo">
+<title id="t-tiempo">Cuándo una familia es nueva para el cliente: según la última vez que la compró</title>
+<rect x="0" y="6" width="520" height="50" rx="6" fill="#FBE6E2"/>
+<text x="260" y="37" font-size="18" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Nueva para el cliente</text>
+<text x="260" y="80" font-size="15" fill="#3D3A36" text-anchor="middle">la última compra fue antes de may-25, o nunca</text>
+<text x="260" y="100" font-size="13" fill="#6E6A63" text-anchor="middle">hace más de 12 meses</text>
+<rect x="526" y="6" width="454" height="50" rx="6" fill="#E2F1F0"/>
+<text x="753" y="37" font-size="18" font-weight="bold" fill="#1A1A2E" text-anchor="middle">No es nueva</text>
+<text x="753" y="80" font-size="15" fill="#3D3A36" text-anchor="middle">la compró en algún mes entre may-25 y abr-26</text>
+<text x="753" y="100" font-size="13" fill="#6E6A63" text-anchor="middle">en los 12 meses anteriores</text>
+<rect x="986" y="6" width="160" height="50" rx="6" fill="#1A1A2E"/>
+<text x="1066" y="37" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">may-26</text>
+<text x="1066" y="80" font-size="15" fill="#3D3A36" text-anchor="middle">mes que se mira</text>
+</svg>
+      <figcaption>Ejemplo: una compra de may-26 se compara con la última vez que el cliente compró esa familia (o SKU).</figcaption>
+    </figure>
+    <dl class="definiciones">
+      <div><dt>Base</dt><dd>Sell-in del canal MA, <span class="nw">ene-23 a set-26</span>, con historia desde 2022. Compra = venta neta mayor a cero.</dd></div>
+      <div><dt>Sin lanzamientos</dt><dd>No cuentan los SKUs estreno: su primer mes en MA y los 3 siguientes.</dd></div>
+      <div><dt>Indicador</dt><dd>% de clientes del mes con algo nuevo, promediado por periodo.</dd></div>
+      <div><dt>Dos vistas</dt><dd>Canal MA: todo lo que compra. Web: sus pedidos web contra toda su compra previa.</dd></div>
+      <div><dt>Segmentos</dt><dd>Lista oficial 2026, con Plata y Bronce juntos.</dd></div>
+      <div><dt>Periodos</dt><dd>Antes: <span class="nw">ene-23 a jun-25</span>. Con Infaltables: <span class="nw">jul-25 a set-26</span>.</dd></div>
+    </dl>
+  </div>
+  <div class="recuadro">Nuevo = lo compra este mes y no lo compró en los 12 meses anteriores.</div>
+  <footer class="pie"><span class="numero">4 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Clasificación validada con dos cálculos independientes. Fuente: sell-in del canal MA, <span class="nw">ene-23 a set-26</span>.</span></footer>
+</section>
+<section class="slide general" aria-label="Resultados">
+  <header class="cabecera"><span class="seccion">Resultados</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>En la web, donde vive Infaltables, el % de clientes con SKU nuevo sube de 57% a 66%</h1>
+  <p class="bajada">% de clientes del mes que compran algo que no compraban en 12 meses.</p>
+  <div class="cuerpo columna-unica">
+    <div>
+      <table class="resultados">
+        <caption>Antes (<span class="nw">ene-23 a jun-25</span>) → con Infaltables (<span class="nw">jul-25 a set-26</span>)</caption>
+        <thead>
+          <tr class="grupos"><th rowspan="2" style="text-align:left">Segmento</th><th colspan="2" class="sep">Clientes al mes</th><th colspan="2" class="sep">% con familia nueva</th><th colspan="2" class="sep">% con SKU nuevo</th></tr>
+          <tr class="sub"><th class="sep">Canal MA</th><th>Web</th><th class="sep">Canal MA</th><th>Web</th><th class="sep">Canal MA</th><th class="foco">Web</th></tr>
+        </thead>
+        <tbody>
+<tr class="total"><th>Total MA</th><td class="cli">184 → 183</td><td class="cli">36 → 112</td><td><span class="par">43.2% → 37.8%</span><span class="delta baja">▼ 5.4 pp</span></td><td><span class="par">34.5% → 34.0%</span><span class="delta baja">▼ 0.5 pp</span></td><td><span class="par">67.4% → 68.0%</span><span class="delta sube">▲ 0.6 pp</span></td><td class="foco"><span class="par">57.0% → 66.0%</span><span class="delta sube">▲ 9.0 pp</span></td></tr>
+<tr><th>Productores</th><td class="cli">11 → 11</td><td class="cli">3 → 9</td><td><span class="par">37.6% → 31.4%</span><span class="delta baja">▼ 6.2 pp</span></td><td><span class="par">50.0% → 29.5%</span><span class="delta baja">▼ 20.5 pp</span></td><td><span class="par">73.4% → 74.5%</span><span class="delta sube">▲ 1.1 pp</span></td><td class="foco"><span class="par">79.0% → 72.6%</span><span class="delta baja">▼ 6.4 pp</span></td></tr>
+<tr><th>Diamante</th><td class="cli">15 → 17</td><td class="cli">5 → 16</td><td><span class="par">43.8% → 31.7%</span><span class="delta baja">▼ 12.1 pp</span></td><td><span class="par">32.9% → 30.7%</span><span class="delta baja">▼ 2.2 pp</span></td><td><span class="par">71.9% → 70.1%</span><span class="delta baja">▼ 1.8 pp</span></td><td class="foco"><span class="par">63.4% → 70.7%</span><span class="delta sube">▲ 7.3 pp</span></td></tr>
+<tr><th>Oro</th><td class="cli">12 → 14</td><td class="cli">4 → 12</td><td><span class="par">46.2% → 26.1%</span><span class="delta baja">▼ 20.1 pp</span></td><td><span class="par">33.4% → 24.2%</span><span class="delta baja">▼ 9.2 pp</span></td><td><span class="par">69.2% → 54.2%</span><span class="delta baja">▼ 15.0 pp</span></td><td class="foco"><span class="par">65.7% → 55.6%</span><span class="delta baja">▼ 10.1 pp</span></td></tr>
+<tr><th>Plata + Bronce</th><td class="cli">146 → 141</td><td class="cli">24 → 75</td><td><span class="par">43.2% → 40.2%</span><span class="delta baja">▼ 3.0 pp</span></td><td class="foco"><span class="par">31.6% → 37.1%</span><span class="delta sube">▲ 5.5 pp</span></td><td><span class="par">66.3% → 68.6%</span><span class="delta sube">▲ 2.3 pp</span></td><td class="foco"><span class="par">50.0% → 66.0%</span><span class="delta sube">▲ 16.0 pp</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="recuadro">En la web sube en el total (<span class="delta sube">▲ 9.0 pp</span>) y en Plata + Bronce (<span class="delta sube">▲ 16.0 pp</span>), que son 2 de cada 3 clientes web.</div>
+  <footer class="pie"><span class="numero">5 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Fuente: sell-in del canal MA, <span class="nw">ene-23 a set-26</span></span></footer>
+</section>
+<section class="slide general" aria-label="Infaltables en la web">
+  <header class="cabecera"><span class="seccion">Infaltables en la web</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>La web ya es donde el cliente compra lo nuevo</h1>
+  <div class="cuerpo columna-unica seis">
+    <div>
+      <table class="metricas">
+        <caption>Antes (<span class="nw">ene-23 a jun-25</span>) → con Infaltables (<span class="nw">jul-25 a set-26</span>)</caption>
+        <colgroup><col style="width:580px"><col style="width:170px"><col style="width:190px"><col></colgroup>
+        <thead><tr><th>Indicador</th><th>Antes</th><th>Con Infaltables</th><th>Cambio</th></tr></thead>
+        <tbody>
+<tr><th>Clientes que compran un SKU nuevo por la web, al mes</th><td>22</td><td>74</td><td><span class="delta sube">▲ 52</span></td></tr>
+<tr><th>De los clientes con SKU nuevo, cuántos lo compran por la web</th><td>18.2%</td><td>59.3%</td><td><span class="delta sube">▲ 41.1 pp</span></td></tr>
+<tr><th>De los SKUs nuevos del canal, cuántos entran por la web</th><td>15.4%</td><td>50.7%</td><td><span class="delta sube">▲ 35.3 pp</span></td></tr>
+<tr><th>Clientes web que compran un SKU por primera vez en 3 años</th><td>50.1%</td><td>56.4%</td><td><span class="delta sube">▲ 6.3 pp</span></td></tr>
+<tr><th>Clientes MA que compran por la web</th><td>20.5%</td><td>61.5%</td><td><span class="delta sube">▲ 41.0 pp</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="nv-tarjetas">
+      <div class="tarjeta nv-recompra">
+        <div class="nv-cifra">44.7%</div>
+        <div class="nv-recompra-texto">
+          <p>de lo nuevo que entra por la web se vuelve a comprar en los 3 meses siguientes.*</p>
+          <div class="nv-barras">
+            <div class="nv-fila"><span>Por la web</span><span class="nv-barra"><i style="width:44.7%"></i></span><b>44.7%</b></div>
+            <div class="nv-fila fuera"><span>Otros canales</span><span class="nv-barra"><i style="width:42.5%"></i></span><b>42.5%</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="tarjeta nv-cat">
+        <div class="nv-cat-encabezado">
+          <div class="grafico-titulo">Categorías que más entran <span class="nw">por la web</span></div>
+          <p class="nv-cat-sub">% de los SKUs nuevos que entran por la web, de <span class="nw">ene-23 a set-26</span></p>
+          <p class="nv-cat-nota">Las 5 suman 49.9%.</p>
+        </div>
+        <div class="nv-cat-filas">
+          <div class="nv-cat-fila"><span>Detergentes</span><span class="nv-cat-barra"><i style="width:100.0%"></i></span><b>23.0%</b></div>
+          <div class="nv-cat-fila"><span>Pastas</span><span class="nv-cat-barra"><i style="width:40.0%"></i></span><b>9.2%</b></div>
+          <div class="nv-cat-fila"><span>Galletas</span><span class="nv-cat-barra"><i style="width:31.0%"></i></span><b>7.1%</b></div>
+          <div class="nv-cat-fila"><span>Suavizantes</span><span class="nv-cat-barra"><i style="width:23.4%"></i></span><b>5.4%</b></div>
+          <div class="nv-cat-fila"><span>Jabón líquido</span><span class="nv-cat-barra"><i style="width:22.6%"></i></span><b>5.2%</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="recuadro">6 de cada 10 clientes con SKU nuevo ya lo compran por la web: 74 al mes (22 antes).</div>
+  <footer class="pie"><span class="numero">6 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">*Con Infaltables: <span class="nw">jul-25 a jun-26</span>, los meses que ya cumplieron sus 3 meses. Sin SKUs estreno. Fuente: sell-in del canal MA, <span class="nw">ene-23 a set-26</span>.</span></footer>
+</section>
+<section class="slide general" aria-label="Lectura final">
+  <header class="cabecera"><span class="seccion">Lectura final</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
+  <h1>Infaltables vende, se recompra y está donde el cliente compra lo nuevo</h1>
+  <div class="cuerpo columna-unica">
+    <div class="hallazgos">
+      <div class="hallazgo"><span class="n">1</span><div><h3>Vende más que en 2025</h3><p><b>S/ 3.6 M</b> en ene–set 2026, con un promedio mensual <b>+19.7%</b> <span class="nw">vs jul–dic 2025</span>; <span class="nw">136 clientes</span> compraron de su lista (59.1% de MA).</p></div></div>
+      <div class="hallazgo"><span class="n">2</span><div><h3>Lo que siembra, se recompra</h3><p>Por cada S/ 1 sembrado de ene a jun, <b>S/ 1.1</b> en los 3 meses siguientes: S/ 2.3 M en total.</p></div></div>
+      <div class="hallazgo web"><span class="n">3</span><div><h3>Vive donde se compra lo nuevo</h3><p><b>66.0%</b> de los clientes web compra un SKU nuevo al mes (57.0% antes); <b>6 de cada 10</b> clientes con SKU nuevo lo compran por la web.</p></div></div>
+      <div class="hallazgo hoy"><span class="n">→</span><div><h3>Cómo estamos ahora</h3><p>Lanzamiento de Imperdonables y medición de la captura directa a través del tag.</p></div></div>
+    </div>
+  </div>
+  <div class="recuadro">Infaltables ya da resultados: más venta y recompra, en la web, que es donde hoy se compra lo nuevo.</div>
+  <footer class="pie"><span class="numero">7 / 7</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Octubre 2026</span></footer>
+</section>
+</main>
+<nav class="controles" aria-label="Navegación">
+  <button id="anterior" type="button" aria-label="Lámina anterior">‹</button>
+  <button id="siguiente" type="button" aria-label="Lámina siguiente">›</button>
+</nav>
+<script>
+(function(){
+  var esc = document.querySelector('.escenario');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var prev = document.getElementById('anterior'), next = document.getElementById('siguiente');
+  var i = 0;
+  function ajustar(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    esc.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  function ir(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(el, k){ el.classList.toggle('activa', k === i); el.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
+    prev.disabled = i === 0; next.disabled = i === slides.length - 1;
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  document.addEventListener('keydown', function(e){
+    if (['ArrowRight','PageDown',' ','Enter'].indexOf(e.key) >= 0){ e.preventDefault(); ir(i + 1); }
+    else if (['ArrowLeft','PageUp','Backspace'].indexOf(e.key) >= 0){ e.preventDefault(); ir(i - 1); }
+    else if (e.key === 'Home'){ ir(0); } else if (e.key === 'End'){ ir(slides.length - 1); }
+  });
+  prev.addEventListener('click', function(){ ir(i - 1); });
+  next.addEventListener('click', function(){ ir(i + 1); });
+  window.addEventListener('resize', ajustar);
+  window.addEventListener('hashchange', function(){ var n = parseInt(location.hash.slice(1), 10); if (!isNaN(n) && n - 1 !== i) ir(n - 1); });
+  var h = parseInt((location.hash || '#1').slice(1), 10);
+  ajustar(); ir(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>
