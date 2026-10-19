@@ -120,6 +120,7 @@ p{margin:0}
 .figura{margin:0}
 .figura figcaption{font-size:15px;color:var(--muted);margin-top:4px;line-height:1.4}
 .definiciones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 28px;margin:0}
+.definiciones.dos{grid-template-columns:1fr 1fr}
 .definiciones dt{font-weight:bold;color:var(--ink);font-size:16px}
 .definiciones dd{margin:3px 0 0;font-size:15px;line-height:1.4}
 /* tablas de resultados y de métricas: mismo formato */
@@ -190,8 +191,21 @@ p{margin:0}
 .slide.denso h1{font-size:30px;margin-bottom:4px}
 .slide.denso .bajada{font-size:15px;line-height:1.35}
 .slide.denso .cuerpo{margin-top:8px;gap:8px}
-.slide.junto .cuerpo{justify-content:space-between;gap:16px}
+.slide.junto .cuerpo{justify-content:center;gap:18px}
+.slide.junto .cuerpo .recuadro{margin-top:0}
 .slide.denso .recuadro{margin-top:8px;padding:8px 16px;font-size:15px}
+.casos-fila .tarjeta.elegido{background:var(--teal-t);border-color:var(--teal);box-shadow:inset 0 4px 0 var(--teal)}
+.casos-fila .tarjeta.elegido h3{color:var(--teal-d)}
+.resumen tr.elegido th,.resumen tr.elegido td{background:var(--teal-t)}
+.resumen tr.elegido .cast{color:var(--teal-d)}
+.slide.resultados-castigo .cuerpo{justify-content:flex-start;gap:18px}
+.slide.resultados-castigo .kpis-fila{display:grid;grid-template-columns:1fr 1fr;gap:16px 36px}
+.slide.resultados-castigo .kpi{display:grid;grid-template-columns:auto 1fr;column-gap:18px;row-gap:2px;align-items:center;border-top:none;border-left:4px solid var(--coral);padding:8px 8px 8px 16px}
+.slide.resultados-castigo .kpi.web{border-top-color:transparent;border-left-color:var(--teal)}
+.slide.resultados-castigo .kpi-num{grid-row:1 / span 2;font-size:40px}
+.slide.resultados-castigo .kpi-rotulo{margin-top:0}
+.slide.resultados-castigo .resumen th,.slide.resultados-castigo .resumen td{padding:26px 16px}
+.slide.resultados-castigo .cuerpo .recuadro{margin-top:auto}
 .castigo .kpis-fila{gap:18px;margin-top:0}
 .castigo .kpi{padding-top:8px}
 .castigo .kpi-num{font-size:30px}
@@ -421,37 +435,52 @@ p{margin:0}
   <h1>Castigo a M0 y Recompra 2026</h1>
   <p class="bajada">183 clientes de antes de la iniciativa, jun-2024 a jun-2025. Siembras ene–set 2026 = M1+M2+M3 de esa siembra.</p>
   <div class="cuerpo columna-unica">
-    <div class="kpis-fila">
-      <div class="kpi"><div class="kpi-num">S/ 3.6 M</div><div class="kpi-rotulo">M0 2026</div><div class="kpi-desc">Monto indirecto para infaltables.</div></div>
-      <div class="kpi"><div class="kpi-num">S/ 2.53 M</div><div class="kpi-rotulo">Recompra 2026</div><div class="kpi-desc">M1+M2+M3 de esa siembra.</div></div>
-      <div class="kpi web"><div class="kpi-num">S/ 3.5 M</div><div class="kpi-rotulo">Tras escenario 2</div><div class="kpi-desc">M0 castigado. Queda el 96% del bruto.</div></div>
-      <div class="kpi web"><div class="kpi-num">2.4</div><div class="kpi-rotulo">Tras escenario 2</div><div class="kpi-desc">Recompra castigada. Queda el 97.7% del bruto.</div></div>
-    </div>
-    <div class="hallazgos en-fila">
-      <div class="hallazgo"><span class="n">1</span><div><h3>El castigo más alto está en quien compró 1 vez</h3><p>Castigo medio ~30%. “castigar a todos” puede afectar los montos de quien compró poco.</p></div></div>
-    </div>
-    <div class="cinco">
-      <div class="tarjeta"><span class="num">1</span><h3>Antes</h3><p>Monto WEB de SKUs que no son estreno y el cliente no compró en los 12 meses previos.</p></div>
-      <div class="tarjeta"><span class="num">2</span><h3>M0</h3><p>Match de la lista Infaltables de ese cliente con lo que compró por WEB ese mes.</p></div>
-      <div class="tarjeta"><span class="num">3</span><h3>Recompra</h3><p>Siembra en M0. Recompra = el mismo cliente × SKU en M1, M2 y M3.</p></div>
-      <div class="tarjeta"><span class="num">4</span><h3>Castigo</h3><p>% = promedio del monto medido del antes / venta WEB total del cliente.</p></div>
-      <div class="tarjeta"><span class="num">5</span><h3>Después</h3><p>Ese % se aplica a cada mes del después. Luego se vuelve a sumar.</p></div>
-    </div>
+    <figure class="figura">
+      <svg viewBox="0 0 1150 108" width="1150" height="108" role="img" aria-labelledby="t-castigo">
+<title id="t-castigo">Del antes sale el castigo, y ese porcentaje se aplica en el después</title>
+<rect x="0" y="4" width="374" height="46" rx="6" fill="#FBE6E2"/>
+<text x="187" y="33" font-size="18" font-weight="bold" fill="#1A1A2E" text-anchor="middle" font-family="Arial,sans-serif">Antes</text>
+<text x="187" y="72" font-size="14" fill="#3D3A36" text-anchor="middle" font-family="Arial,sans-serif">Monto WEB de SKUs que no son estreno</text>
+<text x="187" y="92" font-size="13" fill="#6E6A63" text-anchor="middle" font-family="Arial,sans-serif">y el cliente no compró en 12 meses</text>
+<rect x="388" y="4" width="374" height="46" rx="6" fill="#E85D4C"/>
+<text x="575" y="33" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle" font-family="Arial,sans-serif">Castigo</text>
+<text x="575" y="72" font-size="14" fill="#3D3A36" text-anchor="middle" font-family="Arial,sans-serif">% = monto del antes / venta WEB total</text>
+<text x="575" y="92" font-size="13" fill="#6E6A63" text-anchor="middle" font-family="Arial,sans-serif">promedio de ese cliente</text>
+<rect x="776" y="4" width="374" height="46" rx="6" fill="#1A1A2E"/>
+<text x="963" y="33" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle" font-family="Arial,sans-serif">Después</text>
+<text x="963" y="72" font-size="14" fill="#3D3A36" text-anchor="middle" font-family="Arial,sans-serif">Ese % se aplica a los montos de cada mes</text>
+<text x="963" y="92" font-size="13" fill="#6E6A63" text-anchor="middle" font-family="Arial,sans-serif">y el castigo es la nueva suma</text>
+</svg>
+    </figure>
+    Se calculó el castigo para:
+    <dl class="definiciones dos">
+      <div><dt>M0</dt><dd>Match de la lista Infaltables de ese cliente con lo que compró por WEB ese mes.</dd></div>
+      <div><dt>Recompra</dt><dd>Siembra en M0. Recompra = el mismo cliente × SKU en M1, M2 y M3.</dd></div>
+    </dl>
     <p class="formula">monto castigado = monto del mes × <span>(1 − castigo)</span> · si el cliente entra al escenario</p>
+    <div class="hallazgos en-fila">
+      <div class="hallazgo"><span class="n">1</span><div><h3>El castigo más alto está en quien compró 1 vez</h3><p>“castigar a todos” puede afectar los montos de quien compró poco.</p></div></div>
+    </div>
+    <div class="recuadro">Los tres casos existen porque el % de castigo mancha el cálculo cuando es muy alto.</div>
     <div class="casos-fila">
       <div class="tarjeta"><h3>Escenario 1</h3><p>No se castiga a quien tuvo 0 o 1 compra en el antes. (93 clientes).</p></div>
       <div class="tarjeta"><h3>Escenario 2</h3><p>No se castiga 0, 1 y 2 compras. (73 clientes).</p></div>
-      <div class="tarjeta"><h3>Escenario 3</h3><p>No se castiga 0, 1, 2 y 3 compras. (59 clientes).</p></div>
+      <div class="tarjeta elegido"><h3>Escenario 3</h3><p>No se castiga 0, 1, 2 y 3 compras. (59 clientes).</p></div>
     </div>
   </div>
-  <div class="recuadro">Los tres casos existen porque el % de castigo mancha el cálculo cuando es muy alto.</div>
   <footer class="pie"><span class="numero">7 / 9</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">Antes = jun-2024 a jun-2025. Después = siembras ene–set 2026.</span></footer>
 </section>
-<section class="slide denso castigo" aria-label="Tres escenarios de castigo">
+<section class="slide denso castigo resultados-castigo" aria-label="Tres escenarios de castigo">
   <header class="cabecera"><span class="seccion">Castigo de Infaltables</span><span class="etiqueta">Infaltables · Web Aliados</span></header>
   <h1>Los tres escenarios, M0 y recompra 2026</h1>
   <p class="bajada">183 clientes. M0 y recompra sin castigar son los mismos en las tres filas. Cambia lo ya castigado.</p>
   <div class="cuerpo columna-unica">
+    <div class="kpis-fila">
+      <div class="kpi"><div class="kpi-num">S/ 3.6 M</div><div class="kpi-rotulo">M0 2026</div><div class="kpi-desc">Monto indirecto para infaltables.</div></div>
+      <div class="kpi"><div class="kpi-num">S/ 2.53 M</div><div class="kpi-rotulo">Recompra 2026</div><div class="kpi-desc">M1+M2+M3 de esa siembra.</div></div>
+      <div class="kpi web"><div class="kpi-num">S/ 3.50 M</div><div class="kpi-rotulo">Tras escenario 3</div><div class="kpi-desc">M0 castigado. Queda el 97.4% del bruto.</div></div>
+      <div class="kpi web"><div class="kpi-num">S/ 2.48 M</div><div class="kpi-rotulo">Tras escenario 3</div><div class="kpi-desc">Recompra castigada. Queda el 97.7% del bruto.</div></div>
+    </div>
     <table class="resumen">
       <thead>
         <tr>
@@ -464,21 +493,21 @@ p{margin:0}
       </thead>
       <tbody>
         <tr>
-          <th>Escenario 1<small>Sin castigo si 0 o 1 compra · 93 sí / 90 no</small></th>
+          <th>Escenario 1<small>Sin castigo si 0 o 1 compra · 50.8% de clientes castigados</small></th>
           <td class="bruto">S/ 3,592,170</td>
           <td class="cast">S/ 3,459,689<span class="queda">queda 96.3%</span></td>
           <td class="bruto">S/ 2,534,734</td>
           <td class="cast">S/ 2,449,053<span class="queda">queda 96.6%</span></td>
         </tr>
         <tr>
-          <th>Escenario 2<small>Sin castigo si 0, 1 o 2 compras · 73 sí / 110 no</small></th>
+          <th>Escenario 2<small>Sin castigo si 0, 1 o 2 compras · 39.9% de clientes castigados</small></th>
           <td class="bruto">S/ 3,592,170</td>
           <td class="cast">S/ 3,493,315<span class="queda">queda 97.2%</span></td>
           <td class="bruto">S/ 2,534,734</td>
           <td class="cast">S/ 2,475,241<span class="queda">queda 97.7%</span></td>
         </tr>
-        <tr>
-          <th>Escenario 3<small>Sin castigo si 0 a 3 compras · 59 sí / 124 no</small></th>
+        <tr class="elegido">
+          <th>Escenario 3<small>Sin castigo si 0 a 3 compras · 32.2% de clientes castigados</small></th>
           <td class="bruto">S/ 3,592,170</td>
           <td class="cast">S/ 3,498,494<span class="queda">queda 97.4%</span></td>
           <td class="bruto">S/ 2,534,734</td>
@@ -486,8 +515,8 @@ p{margin:0}
         </tr>
       </tbody>
     </table>
+    <div class="recuadro">A partir del escenario 2, todos los porcentajes de castigo son de 50% o menos. Por esto, los escenarios 2 y 3 son más viables que el escenario 1.</div>
   </div>
-  <div class="recuadro">A partir del escenario 2, todos los porcentajes de castigo son de 50% o menos. Por esto, los escenarios 2 y 3 son más viables que el escenario 1.</div>
   <footer class="pie"><span class="numero">8 / 9</span><span>COE Advanced Analytics, Alicorp</span><span class="fuente">periodo: ene–set 2026</span></footer>
 </section>
 <section class="slide general" aria-label="Lectura final">
